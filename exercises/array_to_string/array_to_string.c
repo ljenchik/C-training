@@ -24,8 +24,5 @@ int main()
     }
     printf("%c", char_array[i]);
   }
-
-
-
 	return 0;
 }

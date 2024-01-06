@@ -1,0 +1,30 @@
+opo839@UKJ1Q01XFW5H ~ % cd Documents 
+opo839@UKJ1Q01XFW5H Documents % cd C-training 
+opo839@UKJ1Q01XFW5H C-training % mkdir project
+opo839@UKJ1Q01XFW5H C-training % cd project 
+opo839@UKJ1Q01XFW5H project % touch a.txt b.c c.py d.txt
+opo839@UKJ1Q01XFW5H project % mkdir research
+opo839@UKJ1Q01XFW5H project % mv *.txt research
+opo839@UKJ1Q01XFW5H project % cd research 
+opo839@UKJ1Q01XFW5H research % ls
+a.txt	d.txt
+opo839@UKJ1Q01XFW5H research % cd ..
+opo839@UKJ1Q01XFW5H project % mkdir code
+opo839@UKJ1Q01XFW5H project % mv *.* code
+opo839@UKJ1Q01XFW5H project % cd code
+opo839@UKJ1Q01XFW5H code % ls
+b.c	c.py
+opo839@UKJ1Q01XFW5H code % 
+opo839@UKJ1Q01XFW5H code % cd .. 
+opo839@UKJ1Q01XFW5H project % cd research 
+opo839@UKJ1Q01XFW5H research % vim a.txt
+opo839@UKJ1Q01XFW5H research % cd ..
+opo839@UKJ1Q01XFW5H project % grep -r 'find me'
+./research/a.txt:find me
+opo839@UKJ1Q01XFW5H project % cd research 
+opo839@UKJ1Q01XFW5H research % chmod 444 a.txt
+opo839@UKJ1Q01XFW5H research % ls -l
+total 8
+-r--r--r--  1 opo839  staff  8  4 Jan 21:22 a.txt
+-rw-r--r--  1 opo839  staff  0  4 Jan 21:21 d.txt
+opo839@UKJ1Q01XFW5H research % 

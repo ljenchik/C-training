@@ -1,10 +1,8 @@
 #!/bin/bash
 #Random number between 1 and 20
 random_number=$((1 + $RANDOM % 20))
-echo "My secret number was ${random_number}"
+# echo "My secret number was ${random_number}"
 guessed=false
-
-
 count=1
 while [ $count -le 3 ]
 do
