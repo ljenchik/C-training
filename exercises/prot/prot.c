@@ -1,18 +1,30 @@
 #include<stdio.h>
 int main(void) {
-  unsigned short int Prot = 0xB7B2;
-  
-  int id1 = Prot >> 13;
-  printf("%d\n", Prot);
-  printf("%d\n", id1);
+  unsigned short int prot = 0xB7B2;
 
-  int id2 = ((unsigned short)(Prot << 3)) >> 10;
-  printf("%d\n", id2);
+  printf("%d\n", prot);
   
-  int id3 = ((unsigned short)(Prot <<9 )) >> 9;
-  printf("%d\n", id3);
+  int type = prot >> 10;
+  printf("%d\n", type);
 
-  int check = (id1 << 13) + (id2 << 7) + id3;
+  int priority = ((unsigned short)(prot << 6)) >> 13;
+  printf("%d\n", priority);
+
+  int id = ((unsigned short)(prot <<9 )) >> 9;
+  printf("%d\n", id);
+
+  int check = (type << 10) + (priority << 7) + id;
   printf("%d\n", check);
+
+
+  // Conversion from base 10 to  base 2
+  int r;
+      while(type!=0)
+    {
+        r=type%2;
+        type=type/2;
+        printf("%d\n", r);
+    }
+
   return 0;
 }  
