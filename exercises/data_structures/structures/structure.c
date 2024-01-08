@@ -36,7 +36,6 @@ struct parent {
   struct child child; 
 };
 
-
 int main(void) {
   // Initialization using Initializer List
   struct person new_person = {"John", 23, "London", 1.78};

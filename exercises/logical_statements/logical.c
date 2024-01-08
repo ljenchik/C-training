@@ -26,9 +26,6 @@ int main(void) {
         printf("B = %d\n", B);
       }
     }
-    
   }
-
-
   return 0;
 }
