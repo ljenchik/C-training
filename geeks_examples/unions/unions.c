@@ -32,8 +32,5 @@ int main(void) {
 
   printf("Sizeof union1: %d\n", union1_size);
 
-
-
-
   return 0;
 }
