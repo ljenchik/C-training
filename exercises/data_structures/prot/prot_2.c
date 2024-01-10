@@ -4,21 +4,27 @@
 
 #include<stdio.h>
 #include <stdlib.h>
-#include <math.h>
 
-struct prot {
-  unsigned char type: 6;
-  unsigned char priority: 3;
+typedef struct {
   unsigned char id: 7;
-};
+  unsigned char priority: 3;
+  unsigned char type: 6;
+  
+} my_struct;
+
+
+union u {
+  int16_t num;
+  my_struct my_struct;
+} my_union;
 
 int main(void) {
-  unsigned short int prot = 0xB7B2;
-  struct prot sp = {prot};
-
-  printf("%d\n", sp.type);
-  printf("%d\n", sp.priority);
-  printf("%d\n", sp.id);
+  my_union.num = 0xB7B2;
   
+  printf("ID: %d\n", my_union.my_struct.id); 
+  printf("Priority: %d\n", my_union.my_struct.priority); 
+  printf("Type: %d\n", my_union.my_struct.type); 
+  
+
   return 0;
 }  
