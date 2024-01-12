@@ -1,9 +1,0 @@
----
-triple:          'arm64-apple-darwin'
-binary-path:     result
-relocations:
-  - { offsetInCU: 0x26, offset: 0x26, size: 0x8, addend: 0x0, symName: _main, symObjAddr: 0x0, symBinAddr: 0x100003F40, symSize: 0x2C }
-  - { offsetInCU: 0x33, offset: 0x33, size: 0x8, addend: 0x0, symName: _main, symObjAddr: 0x0, symBinAddr: 0x100003F40, symSize: 0x2C }
-  - { offsetInCU: 0x26, offset: 0x79, size: 0x8, addend: 0x0, symName: _myPrintHelloMake, symObjAddr: 0x0, symBinAddr: 0x100003F6C, symSize: 0x1C }
-  - { offsetInCU: 0x41, offset: 0x94, size: 0x8, addend: 0x0, symName: _myPrintHelloMake, symObjAddr: 0x0, symBinAddr: 0x100003F6C, symSize: 0x1C }
-...
