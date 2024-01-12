@@ -28,6 +28,7 @@
 
 
 void swap(int **n1_ptr, int **n2_ptr) {
+  //Make a temporary pointer to store the single dereference of n1_ptr
   int *temp = *n1_ptr;
   *n1_ptr = *n2_ptr;
   *n2_ptr = temp;
