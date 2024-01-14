@@ -3,8 +3,8 @@
 
 void print_sky_team(void)
 {
-   char skyName[10];
-   char* pTeamName = (char*) malloc(10);
+   char skyName[10]; // declaration of a string, stores in a stack
+   char *pTeamName = (char*) malloc(10); // allocates memoy in a heap, stores in a stack
    
    strcpy(skyName, "Sky UK");
    strcpy(pTeamName , "Home Comms SW Team"); 
