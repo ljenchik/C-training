@@ -13,11 +13,14 @@ int main () {
     arr[i] = my_string[n -1 - i];
   }
 
-  for (int i = 0; i < n; i++) {
-    printf("%c\n", arr[i]);
+  printf("reverse string: %s\n", arr);
+
+  // without copying a string
+  for (int i = n - 1; i >= 0; i--) {
+    printf("%c", my_string[i]);
   }
 
-  printf("reverse string: %s\n", arr);
+  
   return 0;
 }
 
