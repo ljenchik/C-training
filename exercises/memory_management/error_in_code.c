@@ -11,11 +11,11 @@ void print_sky_team(void)
    char *pArr2;
 
    strcpy(skyName, "Sky UK"); 
-   strcpy(pTeamName , "Home Comms SW Team");  //bug, malloc is too low
+   strcpy(pTeamName , "Home Comms SW Team");  // malloc is too low, should dallocate char *pTeamName = (char*) malloc(18) in line 8
    
    //print team name
    printf("%s: %s\n", skyName, pTeamName);
-   free(pTeamName); // missing line
+   free(pTeamName); // this line was missing
 }
 
 int main () {
