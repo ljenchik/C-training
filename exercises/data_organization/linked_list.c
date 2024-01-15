@@ -1,48 +1,49 @@
 // Write a library with linked list operations. Write a program to test the library
 #include<stdio.h>
 #include <stdlib.h>
-
-typedef struct node {
-  int data;
-  struct node *next;
-} Node;
-
-
-void print_linked_list(Node *head){
-  // Creating a temp link to a head
-  Node *temp = head;
-  while (temp != NULL) {
-    printf("%d ", temp->data);
-    temp = temp->next;
-  }
-  printf("\n");
-}
+#include"linked_list_operations.h"
 
 int main() {
-  Node n1, n2, n3, n4;
   Node *head;
+  Node *temp;
 
-  n1.data = 5;
-  n2.data = 90;
-  n3.data = 12;
-  n4.data = 56;
+  temp = create_node(0);
+  head = temp;
 
-  // linking the nodes n1, n2, n3 in the list, inserting n4 in the middle of the list
-  head = &n1;
-  head->next=&n2;
-  n2.next=&n4;
-  n4.next=&n3;
-  n3.next=NULL;
-
-  // removing head
-  head=head->next;
-
+  for (int i = 1; i <10; i++) {
+      temp = create_node(i);
+      head = insert_at_head(head, temp);
+  };
+  printf("Creating a linked list \n");
   print_linked_list(head);
 
 
+  Node *new_node = create_node(23);
+  insert_at_back(head, new_node);
+  printf("Inserting at the back of a linked list \n");
+  print_linked_list(head);
 
+  temp = find_node(head, 4);
+  printf("Found node with the data %d\n", temp->data);
 
+  Node *node_to_insert = create_node(389);
+  Node *insert_after = find_node(head, 1);
+  insert_after_node(insert_after, node_to_insert);
+  printf("Inserting a new node after a given node \n");
+  print_linked_list(head);
 
+  head = delete_head(head);
+  printf("Deleting a head \n");
+  print_linked_list(head);
+
+  delete_last_node(head);
+  printf("Deleting the last node of a linked list \n");
+  print_linked_list(head);
+
+  Node *delete_after = find_node(head, 5);
+  delete_node_after(delete_after);
+  printf("Deleting a node after a node with the value 5 \n");
+  print_linked_list(head);
 
   return 0;
 }
