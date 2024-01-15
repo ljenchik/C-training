@@ -1,0 +1,1 @@
+int insert(struct linked_list, struct linkes_list new_node);
