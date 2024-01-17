@@ -18,8 +18,28 @@ void print_sky_team(void)
    free(pTeamName); // this line was missing
 }
 
-int main () {
-   print_sky_team();
-   return 0;
-}
+// int main () {
+//    print_sky_team();
+//    return 0;
+// }
 
+
+int main(void)
+{
+   char name[10];
+   char* pTeamName = NULL;    
+   
+   strcpy(name, "Sky UK");     
+   
+   while(1)
+   {
+       get_sky_team_name(pTeamName);        
+       
+       //print team name
+       printf("%s: %s\n", skyName, pTeamName); 
+       
+       sleep(1);
+   }
+   
+  return 0;
+}
