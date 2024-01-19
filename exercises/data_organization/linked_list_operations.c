@@ -154,3 +154,16 @@ int size(Node *head) {
   }
   return count;
 }
+
+// Delete list
+void delete_list(Node *head) {
+   if (head == NULL) {
+    printf("Error: invalid pointer, no node to delete \n");
+  }
+  else {
+    Node *temp = head;
+    while (temp != NULL) {
+        delete_last_node(temp);
+    }
+  }
+}

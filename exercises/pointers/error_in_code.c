@@ -8,14 +8,12 @@
 void  get_sky_team_name(char* name)
 {
    char* ptr = (char*) malloc(10);
-   
    //copy team name to pointer
-   strcpy(*ptr, "Home Comms SW Team"); // malloc is too low for this string
-   
+   strcpy(*ptr, "Home Comms SW Team"); // malloc(10) is too low for this string
    //return team name
-   name = *ptr;
+   name = *ptr; // name = "Home Comms SW Team"
 
-  //  free(ptr);
+    //free(ptr); // Better to free(ptr) in the main function
 }
   
 int main(void)
@@ -25,12 +23,12 @@ int main(void)
    
    strcpy(name, "Sky UK");     
    
-   while(1)
+   while(1) // indefinite loop
    {
-       get_sky_team_name(pTeamName);        
+       get_sky_team_name(pTeamName); // parameter is NULL 
        
        //print team name
-       printf("%s: %s\n",name, pTeamName); // printf("%s: %s\n", name, pTeamName);
+       printf("%s: %s\n", name, pTeamName); // printf("%s: %s\n", name, pTeamName);
        
        sleep(1);
        free(pTeamName);

@@ -33,3 +33,5 @@ void delete_node_after(Node *node_to_delete_after);
 // Getting a length of a linked list
 int size(Node *head);
 
+// Deleting a linked list
+void delete_list(Node *head);

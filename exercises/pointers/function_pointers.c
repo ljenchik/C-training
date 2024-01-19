@@ -17,7 +17,7 @@ void multiply(int a, int b) {
 int main() {
    int x = 50, y = 5;
    int index;
-    // array of pointers to function of return type int
+    // array of function pointers of return type int
     void (*arr[3])(int, int)
         = { &add, &subtract, &multiply};
 
