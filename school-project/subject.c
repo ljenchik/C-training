@@ -166,12 +166,16 @@ StudentList *create_student(char *student_name) {
 
 // Printing a given student with all info
 void print_student(Student *student) {
-  printf("\t%d\t%s\t \t", student->student_id, student->student_name);
+  printf("Student id\tStudent name\tSubjects\n");
+  printf("\t%d\t%s\t\t", student->student_id, student->student_name);
+  if (student->student_subjects == NULL) {
+    student->student_subjects = malloc(sizeof(SubjectList));
+  }
   while (student->student_subjects != NULL) {
-    printf("%s ", student->student_subjects->subject.subject_name);
+    printf("%s  ", student->student_subjects->subject.subject_name);
     student->student_subjects = student->student_subjects->next;
   }
-  printf("\n ");
+  printf("\n");
 }
 
 // Printing a student found by id
@@ -339,17 +343,25 @@ int main () {
   // Generates an error message, wrong student name
   get_student_by_name(student_head, "Olena");
   printf("=================================================== \n");
+  
   SubjectList *subjects_with_id_2 = get_subject_by_id(subject_head, 2);
   SubjectList *subjects_with_id_3 = get_subject_by_id(subject_head, 3);
+
   StudentList* student_with_id_1 = get_student_by_id(student_head, 1);
 
   add_subject_to_student(student_with_id_1, subjects_with_id_2);
   add_subject_to_student(student_with_id_1, subjects_with_id_3);
 
   StudentList* student_with_id_3 = get_student_by_id(student_head, 3);
-   add_subject_to_student(student_with_id_3, subjects_with_id_3);
+  add_subject_to_student(student_with_id_3, subjects_with_id_3);
 
-  print_students(student_head);
+  // print_student with their subjects
+  print_student(&student_with_id_3->student);
+  print_student(&student_with_id_1->student);
+
+  
+
+
   // printf("=================================================== \n");
   // SubjectList *subjects_head_3;
   // subjects_head_3 = get_subject_by_id(head, 1);
