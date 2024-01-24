@@ -118,12 +118,12 @@ void add_subject(SubjectList *head, SubjectList *new_subject) {
 
 // Getting a specified subject found by id
 SubjectList *get_subject_by_id(SubjectList *head, int subject_id){
-  // if (head == NULL)
-  // {
-  //   printf("Error: invalid pointer \n");
-  //   return NULL;
-  // }
-  // else {
+  if (head == NULL)
+  {
+    printf("Error: invalid pointer \n");
+    return NULL;
+  }
+  else {
     SubjectList *current = head;
     while (current != NULL) {
       if (current->subject.subject_id == subject_id) {
@@ -131,8 +131,8 @@ SubjectList *get_subject_by_id(SubjectList *head, int subject_id){
         }
         current = current->next;
     }
-  // }
-  // printf("Subject with id %d was not found \n", subject_id);
+  }
+  printf("Subject with id %d was not found \n", subject_id);
   return NULL;
 }
 
@@ -368,8 +368,6 @@ void print_teachers_by_student(StudentList *head, int student_id) {
   }
 }
 
-
-
 // Find which students are taught by a specified teacher
 void print_students_by_teacher(StudentList *head, char *teacher) {
   StudentList *current = head;
@@ -391,19 +389,42 @@ int main () {
   SubjectList *subject_head = NULL;
   char subject_name[64];
   char subject_teacher[64];
+  bool empty_head_subject = true;
+  bool empty_head_teacher = true;
 
   // Getting user's data (subject name and subject teacher)
   printf("Add the first subject\n");
-  printf("Enter a subject name \n");
-  fgets(subject_name, 64, stdin);
 
-  printf("Enter a teacher name \n");
-  fgets(subject_teacher, 64, stdin);
+  while (empty_head_subject == true) {
+        printf("Enter a subject name \n");
+        fgets(subject_name, 64, stdin);
+        if (subject_name[0] == '\0' || subject_name[0] == '\n') {
+          printf("Subject name must not be empty\n");
+        }
+        else {
+          empty_head_subject= false;
+        }
+    }
+    empty_head_subject = true;
+
+   while (empty_head_teacher == true) {
+        printf("Enter a teacher name \n");
+        fgets(subject_teacher, 64, stdin);
+        if (subject_teacher[0] == '\0' || subject_teacher[0] == '\n') {
+          printf("Teacher name must not be empty\n");
+        }
+        else {
+          empty_head_teacher= false;
+        }
+    }
+    empty_head_teacher = true;
 
   // Creating a head of SubjectList
   subject_head = create_subject(subject_name, subject_teacher);
 
   bool add_more_subjects = true;
+  bool empty_subject = true;
+  bool empty_teacher = true;
   char user_response[5];
 
   printf("Add another subject? (y/n) \n");
@@ -418,16 +439,36 @@ int main () {
       char subject_teacher[64];
 
       // Getting user's data (subject name and subject teacher)
-      printf("Enter a subject name \n");
-      fgets(subject_name, 64, stdin);
-
-      printf("Enter a teacher name \n");
-      fgets(subject_teacher, 64, stdin);
+      // Checking for empty inputs
+      while (empty_subject == true) {
+        printf("Enter a subject name \n");
+        fgets(subject_name, 64, stdin);
+        if (subject_name[0] == '\0' || subject_name[0] == '\n') {
+          printf("Subject name must not be empty\n");
+        }
+        else {
+          empty_subject= false;
+        }
+      }
+      empty_subject = true;
+      
+      // Checking for empty inputs
+      while (empty_teacher == true) {
+        printf("Enter a teacher name \n");
+        fgets(subject_teacher, 64, stdin);
+        if (subject_teacher[0] == '\0' || subject_teacher[0] == '\n') {
+          printf("Teacher name must not be empty\n");
+        }
+        else {
+          empty_teacher= false;
+        }
+      }
+      empty_teacher = true;
 
       SubjectList *new_subject = create_subject(subject_name, subject_teacher);
       add_subject(subject_head, new_subject);
 
-      printf("Add another subject? (y/n) \n");
+      printf("Do you want to add another subject? (y/n) \n");
       fgets(user_response, 5, stdin);
       if (strcmp(user_response, "n\n") == 0) {
         add_more_subjects = false;
@@ -435,55 +476,23 @@ int main () {
     }
   }
 
-  
+  // To do: check empty inputs and if subject is already in the list
+  print_subjects(subject_head);
 
-print_subjects(subject_head);
+  printf("=================================================== \n");
 
-
-  // // Adding a new subject to the SubjectList
-  // char subject_name1[64];
-  // char subject_teacher1[64];
-
-  // // Getting user's data (subject name and subject teacher)
-  // printf("Add a new subject\n");
-  // printf("Enter a subject name \n");
-  // fgets(subject_name1, 64, stdin);
-
-  // printf("Enter a teacher name \n");
-  // fgets(subject_teacher1, 64, stdin);
-
-  // SubjectList *new_subject1 = create_subject(subject_name1, subject_teacher1);
-  // add_subject(subject_head, new_subject1);
-
-  // print_subjects(subject_head);
-
-//  // Adding a new subject to the SubjectList
-//   char subject_name2[64];
-//   char subject_teacher2[64];
-
-//   // Getting user's data (subject name and subject teacher)
-//   printf("Add a new subject\n");
-//   printf("Enter a subject name \n");
-//   fgets(subject_name2, 64, stdin);
-
-//   printf("Enter a teacher name \n");
-//   fgets(subject_teacher2, 64, stdin);
-
-//   SubjectList *new_subject2 = create_subject(subject_name2, subject_teacher2);
-//   add_subject(subject_head, new_subject2);
-
-//   print_subjects(subject_head);
-
-  // printf("=================================================== \n");
+  // // Testing functions get_subject_by_id() and get_subject_by_name()
   // // Getting a subject by subject id
-  // // get_subject_by_id(subject_head, 2);
+  // get_subject_by_id(subject_head, 2);
   // // Generates an error message, wrong subject id
-  // // get_subject_by_id(subject_head, 5);
+  // get_subject_by_id(subject_head, 5);
   // // Getting a subject by subject name
-  // // get_subject_by_name(subject_head, "History");
+  // get_subject_by_name(subject_head, "History");
   // // Generates an error message, wrong subject name
-  // // get_subject_by_name(subject_head, "Science");
-  // printf("=================================================== \n");
+  // get_subject_by_name(subject_head, "Science");
+
+  printf("=================================================== \n");
+
   // StudentList *student_head = NULL;
   // student_head = create_student("Jack");
   // StudentList *new_student = create_student("Lisa");
