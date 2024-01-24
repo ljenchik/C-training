@@ -49,7 +49,7 @@ SubjectList *create_subject(char *subject_name, char *teacher) {
 
 // Printing a  given subject with all info
 void print_subject(SubjectList *subject) {
-  printf("\t %d \t %s \t %s\n", subject->subject.subject_id, subject->subject.subject_name, subject->subject.teacher);
+  printf("\t%d\t%s\t%s\n", subject->subject.subject_id, subject->subject.subject_name, subject->subject.teacher);
 }
 
 // Printing a specified subject found by id
@@ -66,7 +66,6 @@ void find_and_print_subject(SubjectList *head, int subject_id){
         current = current->next;
       }
   }
-
   printf("Subject with id %d was not found \n", subject_id);
 }
 
@@ -108,22 +107,21 @@ void add_subject(SubjectList *head, SubjectList *new_subject) {
 
 // Getting a specified subject found by id
 SubjectList *get_subject_by_id(SubjectList *head, int subject_id){
-  if (head == NULL)
-  {
-    printf("Error: invalid pointer \n");
-    return NULL;
-  }
-  else {
+  // if (head == NULL)
+  // {
+  //   printf("Error: invalid pointer \n");
+  //   return NULL;
+  // }
+  // else {
     SubjectList *current = head;
     while (current != NULL) {
       if (current->subject.subject_id == subject_id) {
-          print_subject(current);
           return current;
         }
         current = current->next;
     }
-  }
-  printf("Subject with id %d was not found \n", subject_id);
+  // }
+  // printf("Subject with id %d was not found \n", subject_id);
   return NULL;
 }
 
@@ -168,12 +166,10 @@ StudentList *create_student(char *student_name) {
 void print_student(Student *student) {
   printf("Student id\tStudent name\tSubjects\n");
   printf("\t%d\t%s\t\t", student->student_id, student->student_name);
-  if (student->student_subjects == NULL) {
-    student->student_subjects = malloc(sizeof(SubjectList));
-  }
-  while (student->student_subjects != NULL) {
-    printf("%s  ", student->student_subjects->subject.subject_name);
-    student->student_subjects = student->student_subjects->next;
+  SubjectList *current = student->student_subjects;
+  while (current != NULL) {
+    printf("%s  ", current->subject.subject_name);
+    current = current->next;
   }
   printf("\n");
 }
@@ -284,7 +280,6 @@ Student *get_student_by_name(StudentList *head, char *student_name){
   return NULL;
 }
 
-
 // Adds a subject and a corresponding teacher to the subjects of a student with a given id
 void add_subject_to_student(StudentList *student_head, SubjectList *subject_head) {
     SubjectList *existing_subjects = student_head->student.student_subjects;
@@ -294,17 +289,23 @@ void add_subject_to_student(StudentList *student_head, SubjectList *subject_head
     student_head->student.student_subjects = new_head;
 }
 
+// Prints a teacher name by a given subject id
+void find_teacher_by_subject(SubjectList *head, int subject_id) {
+  SubjectList *found_subject = get_subject_by_id(head, subject_id);
+  print_subject(found_subject);
+}
 
-// Adds a subject and a corresponding teacher to the subjects of a student with a given id
-// void add_subject_to_student(StudentList *student_head, SubjectList *subject_head, SubjectList *subjects_head, int student_id, int subject_id) {
-//     StudentList *student = get_student_by_id(student_head, student_id);
-//     SubjectList *subject = get_subject_by_id(subject_head, subject_id);
-//     if (student->student.student_subjects == NULL) {
-//         student->student.student_subjects = subject;
-//         return;
-//     }
-//     add_subject(student->student.student_subjects, subject);
-// }
+// Prints all students studying a given subject
+void print_students_by_subject(StudentList *head, int subject_id) {
+  StudentList *current = head;
+  while (current != NULL) {
+    SubjectList *found_subject = get_subject_by_id(current->student.student_subjects, subject_id);
+      if (found_subject != NULL) {
+        printf("%s \n", current->student.student_name);
+      }
+    current = current->next;
+  }
+}
 
 int main () {
   SubjectList *subject_head = NULL;
@@ -320,13 +321,13 @@ int main () {
   print_subjects(subject_head);
   printf("=================================================== \n");
   // Getting a subject by subject id
-  get_subject_by_id(subject_head, 2);
+  // get_subject_by_id(subject_head, 2);
   // Generates an error message, wrong subject id
-  get_subject_by_id(subject_head, 5);
+  // get_subject_by_id(subject_head, 5);
   // Getting a subject by subject name
-  get_subject_by_name(subject_head, "History");
+  // get_subject_by_name(subject_head, "History");
   // Generates an error message, wrong subject name
-  get_subject_by_name(subject_head, "Science");
+  // get_subject_by_name(subject_head, "Science");
   printf("=================================================== \n");
   StudentList *student_head = NULL;
   student_head = create_student("Jack");
@@ -355,23 +356,24 @@ int main () {
   StudentList* student_with_id_3 = get_student_by_id(student_head, 3);
   add_subject_to_student(student_with_id_3, subjects_with_id_3);
 
+  StudentList* student_with_id_2 = get_student_by_id(student_head, 2);
+
   // print_student with their subjects
   print_student(&student_with_id_3->student);
   print_student(&student_with_id_1->student);
+  print_student(&student_with_id_2->student);
+  printf("=================================================== \n");
+  // prints a teacher by subject id
+  //find_teacher_by_subject(subject_head, 2);
+  printf("=================================================== \n");
 
-  
+  print_students_by_subject(student_head, 3);
 
+  print_students_by_subject(student_head, 2);
 
-  // printf("=================================================== \n");
-  // SubjectList *subjects_head_3;
-  // subjects_head_3 = get_subject_by_id(head, 1);
-  // add_subject_to_student(student_head, head, subjects_head_3, 3, 2);
-  // print_students(student_head);
-  // printf("=================================================== \n");
-  // SubjectList *subjects_head_5;
-  // subjects_head_5 = get_subject_by_id(head, 1);
-  // add_subject_to_student(student_head, head, subjects_head_3, 2, 2);
-  // print_students(student_head);
+  print_students_by_subject(student_head, 1);
+
+  print_students_by_subject(student_head, 5);
 
 
 
