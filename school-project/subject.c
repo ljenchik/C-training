@@ -35,12 +35,7 @@ typedef struct student_list {
 
 // Creating a new subject (it's a node in a SubjectList)
 SubjectList *create_subject(char *subject_name, char *teacher) {
-  if (strlen(subject_name) <= 1 || strlen(teacher) <= 0) {
-    printf("Subject name and/or teacher name must not be empty");
-    return NULL;
-  }
-  else {
-    SubjectList *new_subject=malloc(sizeof(SubjectList));
+  SubjectList *new_subject=malloc(sizeof(SubjectList));
   // Creating subject_id using a static variable
   new_subject->subject.subject_id = ++subject_id;
 
@@ -52,7 +47,6 @@ SubjectList *create_subject(char *subject_name, char *teacher) {
 
   new_subject->next=NULL;
   return new_subject;
-  }
 }
 
 // Printing a  given subject with all info
@@ -96,66 +90,69 @@ void print_subjects(SubjectList *head){
   }
 }
 
-// Inserting a new subject at the back of a list
-void add_subject(SubjectList *head, SubjectList *new_subject) {
-  if (new_subject == NULL)
-  {
-    printf("Error: invalid pointer, no subject to insert \n");
-    return;
-  }
-  if (head == NULL)
-  {
-    printf("Error: invalid pointer, no subject head \n");
-    return;
-  }
-  SubjectList *current = head;
-  while (current->next != NULL) {
-    current = current->next;
-  }
-  current->next = new_subject;
-  new_subject->next=NULL;
-}
-
 // Getting a specified subject found by id
 SubjectList *get_subject_by_id(SubjectList *head, int subject_id){
-  if (head == NULL)
-  {
-    printf("Error: invalid pointer \n");
-    return NULL;
-  }
-  else {
     SubjectList *current = head;
     while (current != NULL) {
       if (current->subject.subject_id == subject_id) {
-          return current;
-        }
-        current = current->next;
+        return current;
+      }
+      current = current->next;
     }
-  }
-  printf("Subject with id %d was not found \n", subject_id);
   return NULL;
 }
 
 // Getting a specified subject found by name
-Subject *get_subject_by_name(SubjectList *head, char * subject_name){
-  if (head == NULL)
-  {
-    printf("Error: invalid pointer \n");
-    return NULL;
-  }
-  else {
+Subject *get_subject_by_name(SubjectList *head, char *subject_name){
     SubjectList *current = head;
     while (current != NULL) {
       if (strcmp(current->subject.subject_name, subject_name) == 0) {
-          print_subject(current);
           return &(current->subject);
         }
         current = current->next;
     }
-    printf("Subject with name %s was not found \n", subject_name);
-  }
   return NULL;
 }
+
+// Getting a specified subject found by name
+Subject *get_subject_by_teacher(SubjectList *head, char *teacher) {
+    SubjectList *current = head;
+    while (current != NULL) {
+      if (strcmp(current->subject.teacher, teacher) == 0) {
+          return &(current->subject);
+        }
+        current = current->next;
+    }
+  return NULL;
+}
+
+// Inserting a new subject at the back of a list
+void add_subject(SubjectList *head, SubjectList *new_subject) {
+  SubjectList *current = head;
+
+  Subject *found_subject_by_name = get_subject_by_name(head, new_subject->subject.subject_name);
+  Subject *found_subject_by_teacher = get_subject_by_teacher(head, new_subject->subject.teacher);
+
+  if (found_subject_by_name != NULL) {
+    printf("%s is already in the list of subjects \n", strtok(new_subject->subject.subject_name, "\n"));
+    return;
+  }
+  else if (found_subject_by_teacher != NULL) {
+    printf("%s is already in the list of subjects \n", strtok(new_subject->subject.teacher, "\n"));
+    return;
+  }
+  else {
+     while (current->next != NULL) {
+    current = current->next;
+    }
+    current->next = new_subject;
+    new_subject->next=NULL;
+  }
+}
+
+
+
+
 
 
 //================Students functions====================
@@ -475,8 +472,6 @@ int main () {
       }
     }
   }
-
-  // To do: check empty inputs and if subject is already in the list
   print_subjects(subject_head);
 
   printf("=================================================== \n");
