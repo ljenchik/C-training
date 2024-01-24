@@ -307,6 +307,39 @@ void print_students_by_subject(StudentList *head, int subject_id) {
   }
 }
 
+// Add a grade to a given student to a given subject
+void add_grade(Student *student, int subject_id, int grade) {
+  SubjectList *existing_subjects = student->student_subjects;
+  SubjectList *found_subject = get_subject_by_id(existing_subjects, subject_id);
+  if (found_subject != NULL) {
+    found_subject->subject.grade = grade;
+  }
+}
+
+// Prints all subjects with the corresponding grades for a given student
+void print_subjects_with_grades(Student *student) {
+   SubjectList *existing_subjects = student->student_subjects;
+   if (existing_subjects == NULL) {
+    printf("Subjects and grades were no assigned to %s \n", student->student_name);
+   }
+   else {
+    printf("%s\'s subjects and grades \n", student->student_name);
+    while (existing_subjects != NULL) {
+    printf("%d\t\t%s\t\t%d \n", existing_subjects->subject.subject_id, existing_subjects->subject.subject_name, existing_subjects->subject.grade);
+    existing_subjects=existing_subjects->next;
+   }
+  }
+}
+
+// Finds a grade for a specified student for a given subject
+void print_grade_per_subject(Student *student, int subject_id) {
+  SubjectList *existing_subjects = student->student_subjects;
+  SubjectList *found_subject = get_subject_by_id(existing_subjects, subject_id);
+  if (found_subject != NULL) {
+      printf("%d \n", found_subject->subject.grade);
+    }
+  }
+  
 int main () {
   SubjectList *subject_head = NULL;
   // Creating a head for SubjectList
@@ -374,8 +407,12 @@ int main () {
   print_students_by_subject(student_head, 1);
 
   print_students_by_subject(student_head, 5);
+  printf("=================================================== \n");
+  add_grade(&student_with_id_1->student, 3, 98);
+  print_subjects_with_grades(&student_with_id_1->student);
 
-
+  printf("=================================================== \n");
+  print_grade_per_subject(&student_with_id_1->student, 3);
 
   return 0;
 }
