@@ -55,23 +55,7 @@ void print_subject(SubjectList *subject) {
   strtok(subject->subject.subject_name, "\n");
   strtok(subject->subject.teacher, "\n");
   printf("\t%d\t\%s\t\t%s\n", subject->subject.subject_id, subject->subject.subject_name, subject->subject.teacher);
-}
-
-// Printing a specified subject found by id
-void find_and_print_subject(SubjectList *head, int subject_id){
-  if (head == NULL) {
-    printf("Error: invalid pointer \n");
-  } else {
-      SubjectList *current = head;
-      while (current != NULL) {
-        if (current->subject.subject_id == subject_id) {
-            print_subject(current);
-            return;
-        }
-        current = current->next;
-      }
-  }
-  printf("Subject with id %d was not found \n", subject_id);
+  printf("\n");
 }
 
 // Printing all subjects with teachers
@@ -83,6 +67,7 @@ void print_subjects(SubjectList *head){
   else {
     SubjectList *current = head;
     printf("Subject id\tSubject\t\tTeacher\n");
+    printf("\n");
     while (current != NULL) {
       print_subject(current);
       current = current->next;
@@ -150,11 +135,6 @@ void add_subject(SubjectList *head, SubjectList *new_subject) {
   }
 }
 
-
-
-
-
-
 //================Students functions====================
 // Creating a student
 StudentList *create_student(char *student_name) {
@@ -172,31 +152,13 @@ StudentList *create_student(char *student_name) {
 
 // Printing a given student with all info
 void print_student(Student *student) {
-  printf("Student id\tStudent name\tSubjects\n");
-  printf("\t%d\t%s\t\t", student->student_id, student->student_name);
+  printf("\t%d\t%s\t\t", student->student_id, strtok(student->student_name, "\n"));
   SubjectList *current = student->student_subjects;
   while (current != NULL) {
     printf("%s  ", current->subject.subject_name);
     current = current->next;
   }
   printf("\n");
-}
-
-// Printing a student found by id
-void find_and_print_student(StudentList *head, int student_id){
-  if (head == NULL) {
-    printf("Error: invalid pointer \n");
-  } else {
-      StudentList *current = head;
-      while (current != NULL) {
-        if (current->student.student_id == student_id) {
-            print_student(&current->student);
-            return;
-        }
-        current = current->next;
-      }
-  }
-  printf("Student with id %d was not found \n", student_id);
 }
 
 // Adding a new student 
@@ -220,7 +182,7 @@ void add_student(StudentList *head, StudentList *new_student) {
 }
 
 // Printing all students with their subjects, needs some work on printing subjects
-void print_students(StudentList *head){
+void print_students(StudentList *head) {
   if (head == NULL)
   {
     printf("Error: invalid pointer \n");
@@ -228,67 +190,46 @@ void print_students(StudentList *head){
   else {
     StudentList *current = head;
     printf("Student id\tName\t\tSubjects\n");
+    printf("\n");
     while (current != NULL) {
-      if (current->student.student_subjects == NULL) {
-        print_student(&(current->student));
-      }
-      else {
-        printf("\t%d\t%s\t\t", current->student.student_id, current->student.student_name);
-        while (current->student.student_subjects != NULL) {
-          printf("%s ",  current->student.student_subjects->subject.subject_name);
-          current->student.student_subjects = current->student.student_subjects->next;
-        }
-        printf("\n");
-      }
-        
+      print_student(&(current->student));
       current = current->next;
-  }
-  printf("\n");
+    }
+    printf("\n");
   }
 }
 
 // Getting a student by id
 StudentList *get_student_by_id(StudentList *head, int student_id){
-  if (head == NULL)
-  {
-    printf("Error: invalid pointer \n");
-  }
-  else {
-    StudentList *current = head;
-    while (current != NULL) {
-      if (current->student.student_id == student_id) {
-          // print_student(current);
-          return current;
-        }
-        current = current->next;
+  StudentList *current = head;
+  while (current != NULL) {
+    if (current->student.student_id == student_id) {
+      return current;
     }
-    printf("Student with id %d was not found \n", student_id);
+    current = current->next;
   }
   return NULL;
 }
 
-// Getting a student by name
-Student *get_student_by_name(StudentList *head, char *student_name){
-  if (head == NULL)
-  {
-    printf("Error: invalid pointer \n");
-    return NULL;
-  }
-  else {
-    StudentList *current = head;
-    while (current != NULL) {
-       if (strcmp(current->student.student_name, student_name) == 0) {
-          print_student(&current->student);
-          return &(current->student);
-        }
-        current = current->next;
-    }
-    printf("Student with name %s was not found \n", student_name);
-  }
-  return NULL;
-}
+// // Adds a subject and a corresponding teacher to the subjects of a student with a given id
+// void add_subject_to_student(StudentList *student_head, SubjectList *subject_head, int student_id, int subject_id) {
+//     StudentList *found_student = get_student_by_id(student_head, student_id);
+//     if (found_student == NULL) {
+//       printf("Student with id %d was not found", found_student->student.student_id);
+//       return;
+//     }
+//     SubjectList *found_subject = get_subject_by_id(subject_head, subject_id);
+//      if (found_subject == NULL) {
+//       printf("Subject with id %d was not found", found_subject->subject.subject_id);
+//       return;
+//     }
+//     SubjectList *existing_subjects = found_student->student.student_subjects;
+//     SubjectList *new_head = create_subject(found_subject->subject.subject_name, found_subject->subject.teacher);
+//     // new_head->subject = found_subject->subject;
+//     new_head->next = existing_subjects;
+//     existing_subjects = new_head;
+// }
 
-// Adds a subject and a corresponding teacher to the subjects of a student with a given id
 void add_subject_to_student(StudentList *student_head, SubjectList *subject_head) {
     SubjectList *existing_subjects = student_head->student.student_subjects;
     SubjectList *new_head = malloc(sizeof(SubjectList));
@@ -424,7 +365,7 @@ int main () {
   bool empty_teacher = true;
   char user_response[5];
 
-  printf("Add another subject? (y/n) \n");
+  printf("Do you want to add another subject? (y/n) \n");
   fgets(user_response, 5, stdin);
   if (strcmp(user_response, "n\n") == 0) {
     add_more_subjects = false;
@@ -472,38 +413,144 @@ int main () {
       }
     }
   }
+
+  printf("=================================================== \n");
+  printf("=================================================== \n");
+
+  // ==================Student functions=====================
+
+  StudentList *student_head = NULL;
+
+  char student_name[64];
+  bool empty_head_student = true;
+
+  // Getting user's data (student name)
+  printf("Add the first student\n");
+
+  while (empty_head_student == true) {
+        printf("Enter a student name \n");
+        fgets(student_name, 64, stdin);
+        if (student_name[0] == '\0' || student_name[0] == '\n') {
+          printf("Student name must not be empty\n");
+        }
+        else {
+          empty_head_student= false;
+        }
+    }
+    empty_head_student = true;
+
+  // Creating a head of StudentList
+    student_head = create_student(student_name);
+
+  bool add_more_students = true;
+  bool empty_student_name = true;
+  char user_response1[5];
+
+  printf("Do you want to add another student? (y/n) \n");
+  fgets(user_response1, 5, stdin);
+  if (strcmp(user_response1, "n\n") == 0) {
+    add_more_students = false;
+  }
+  else {
+    while (add_more_students == true) {
+      // Adding a new student to the StudnetList
+      char student_name[64];
+
+      // Checking for empty inputs
+      while (empty_student_name == true) {
+        printf("Enter a student name \n");
+        fgets(student_name, 64, stdin);
+        if (student_name[0] == '\0' || student_name[0] == '\n') {
+          printf("Student name must not be empty\n");
+        }
+        else {
+          empty_student_name = false;
+        }
+      }
+      empty_student_name = true;
+      
+      StudentList *new_student = create_student(student_name);
+      add_student(student_head, new_student);
+
+      printf("Do you want to add another student? (y/n) \n");
+      fgets(user_response1, 5, stdin);
+      if (strcmp(user_response1, "n\n") == 0) {
+        add_more_students = false;
+      }
+    }
+  }
+
+  printf("=================================================== \n");
+  printf("=================================================== \n");
+
+  printf("The list of all subjects \n");
+  printf("\n");
   print_subjects(subject_head);
 
   printf("=================================================== \n");
-
-  // // Testing functions get_subject_by_id() and get_subject_by_name()
-  // // Getting a subject by subject id
-  // get_subject_by_id(subject_head, 2);
-  // // Generates an error message, wrong subject id
-  // get_subject_by_id(subject_head, 5);
-  // // Getting a subject by subject name
-  // get_subject_by_name(subject_head, "History");
-  // // Generates an error message, wrong subject name
-  // get_subject_by_name(subject_head, "Science");
-
   printf("=================================================== \n");
 
-  // StudentList *student_head = NULL;
-  // student_head = create_student("Jack");
-  // StudentList *new_student = create_student("Lisa");
-  // add_student(student_head, new_student);
-  // StudentList *new_student1 = create_student("Misha");
-  // add_student(student_head, new_student1);
-  // print_students(student_head);
-  // printf("=================================================== \n");
-  // get_student_by_id(student_head, 2);
-  // // Generates an error message, wrong student id
-  // get_student_by_id(student_head, 5);
-  // get_student_by_name(student_head, "Misha");
-  // // Generates an error message, wrong student name
-  // get_student_by_name(student_head, "Olena");
-  // printf("=================================================== \n");
+  printf("The list of all students \n");
+  printf("\n");
+  print_students(student_head);
+
+  printf("=================================================== \n");
+  printf("=================================================== \n");
+
+  // Adding subject to a student
+  bool student_id_empty = true;
+  bool subject_id_empty = true;
+  char user_response3[5];
+  bool add_subject_student = true;
+
+  char stu_id[4];
+  int student_id;
+  char sub_id[4];
+  int subject_id;
+
+  printf("Add subject to a student \n");
+
+  while (add_subject_student == true) {
+
+    while (student_id_empty == true) {
+      printf("Enter student id: ");
+      fgets(stu_id, 4, stdin);
+      student_id = atoi(stu_id);
+      student_id_empty = false;
+    }
+    student_id_empty = true;
+
+    while (subject_id_empty == true) {
+      printf("Enter subject id: ");
+      fgets(sub_id, 4, stdin);
+      subject_id = atoi(sub_id);
+      subject_id_empty = false;
+    }
+    subject_id_empty = true;
+
+    //add_subject_to_student(student_head, subject_head, student_id, subject_id);
+    StudentList *found_stu1 = get_student_by_id(student_head, student_id);
+    SubjectList *found_sub1 = get_subject_by_id(subject_head, subject_id);
+
+    add_subject_to_student(found_stu1, found_sub1);
+
+    printf("Do you want to add another subject to a student? (y/n) \n");
+    fgets(user_response3, 5, stdin);
+    if (strcmp(user_response3, "n\n") == 0) {
+      add_subject_student = false;
+    }
+  }
   
+  printf("=================================================== \n");
+  printf("=================================================== \n");
+  
+
+    printf("The list of all students \n");
+    printf("\n");
+    print_students(student_head);
+
+
+
   // SubjectList *subjects_with_id_2 = get_subject_by_id(subject_head, 2);
   // SubjectList *subjects_with_id_3 = get_subject_by_id(subject_head, 3);
 
