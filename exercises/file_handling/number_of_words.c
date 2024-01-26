@@ -43,7 +43,6 @@ int main()
     // fgets(s, 100, fptr);
     // printf("%s\n", s); // Prints Lorem Ipsum is simply dummy text of the printing and typesetting industry.
     
-
     // Printing all the lines in the file
     while(fgets(s, 100, fptr)) {
       count += counter(s);

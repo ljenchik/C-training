@@ -211,25 +211,6 @@ StudentList *get_student_by_id(StudentList *head, int student_id){
   return NULL;
 }
 
-// // Adds a subject and a corresponding teacher to the subjects of a student with a given id
-// void add_subject_to_student(StudentList *student_head, SubjectList *subject_head, int student_id, int subject_id) {
-//     StudentList *found_student = get_student_by_id(student_head, student_id);
-//     if (found_student == NULL) {
-//       printf("Student with id %d was not found", found_student->student.student_id);
-//       return;
-//     }
-//     SubjectList *found_subject = get_subject_by_id(subject_head, subject_id);
-//      if (found_subject == NULL) {
-//       printf("Subject with id %d was not found", found_subject->subject.subject_id);
-//       return;
-//     }
-//     SubjectList *existing_subjects = found_student->student.student_subjects;
-//     SubjectList *new_head = create_subject(found_subject->subject.subject_name, found_subject->subject.teacher);
-//     // new_head->subject = found_subject->subject;
-//     new_head->next = existing_subjects;
-//     existing_subjects = new_head;
-// }
-
 void add_subject_to_student(StudentList *student_head, SubjectList *subject_head) {
     SubjectList *existing_subjects = student_head->student.student_subjects;
     SubjectList *new_head = malloc(sizeof(SubjectList));
@@ -545,33 +526,89 @@ int main () {
   printf("=================================================== \n");
   
 
-    printf("The list of all students \n");
-    printf("\n");
-    print_students(student_head);
+  printf("The list of all students \n");
+  printf("\n");
+  print_students(student_head);
+
+  printf("=================================================== \n");
+  printf("=================================================== \n");
 
 
 
-  // SubjectList *subjects_with_id_2 = get_subject_by_id(subject_head, 2);
-  // SubjectList *subjects_with_id_3 = get_subject_by_id(subject_head, 3);
 
-  // StudentList* student_with_id_1 = get_student_by_id(student_head, 1);
+// Adding grade to a student for a specified subject
+  student_id_empty = true;
+  subject_id_empty = true;
+  bool subject_grade_empty = true;
+  char user_response4[5];
+  bool add_grade_student = true;
 
-  // add_subject_to_student(student_with_id_1, subjects_with_id_2);
-  // add_subject_to_student(student_with_id_1, subjects_with_id_3);
+  //char stu_id[4];
+  //int student_id;
+  //char sub_id[4];
+  //int subject_id;
+  char stu_grade[4];
+  int grade;
 
-  // StudentList* student_with_id_3 = get_student_by_id(student_head, 3);
-  // add_subject_to_student(student_with_id_3, subjects_with_id_3);
+  printf("Add a grade for a student\n");
 
-  // StudentList* student_with_id_2 = get_student_by_id(student_head, 2);
+  while (add_grade_student == true) {
 
-  // // print_student with their subjects
-  // print_student(&student_with_id_3->student);
-  // print_student(&student_with_id_1->student);
-  // print_student(&student_with_id_2->student);
-  // printf("=================================================== \n");
+    while (student_id_empty == true) {
+      printf("Enter student id: ");
+      fgets(stu_id, 4, stdin);
+      student_id = atoi(stu_id);
+      student_id_empty = false;
+    }
+    student_id_empty = true;
+
+    while (subject_id_empty == true) {
+      printf("Enter subject id: ");
+      fgets(sub_id, 4, stdin);
+      subject_id = atoi(sub_id);
+      subject_id_empty = false;
+    }
+    subject_id_empty = true;
+
+    while (subject_grade_empty == true) {
+      printf("Enter grade: ");
+      fgets(stu_grade, 4, stdin);
+      grade = atoi(stu_grade);
+      subject_grade_empty = false;
+    }
+    subject_grade_empty = true;
+
+    //add_subject_to_student(student_head, subject_head, student_id, subject_id);
+    StudentList *found_stu2 = get_student_by_id(student_head, student_id);
+
+    add_grade(&found_stu2->student, subject_id, grade);
+
+    printf("Do you want to add another grade? (y/n) \n");
+    fgets(user_response4, 5, stdin);
+    if (strcmp(user_response4, "n\n") == 0) {
+      add_grade_student = false;
+    }
+  }
+  
+  printf("=================================================== \n");
+  printf("=================================================== \n");
+  
+
+  printf("The list of all students with the grades \n");
+  printf("\n");
+  print_students(student_head);
+
+  printf("=================================================== \n");
+  printf("=================================================== \n");
+
+
+
+
   // // prints a teacher by subject id
-  // //find_teacher_by_subject(subject_head, 2);
-  // printf("=================================================== \n");
+  // find_teacher_by_subject(subject_head, 2);
+
+  printf("=================================================== \n");
+  printf("=================================================== \n");
 
   // print_students_by_subject(student_head, 3);
 
@@ -580,6 +617,7 @@ int main () {
   // print_students_by_subject(student_head, 1);
 
   // print_students_by_subject(student_head, 5);
+  
   // printf("=================================================== \n");
   // add_grade(&student_with_id_1->student, 3, 98);
   // print_subjects_with_grades(&student_with_id_1->student);
