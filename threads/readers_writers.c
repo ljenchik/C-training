@@ -51,11 +51,13 @@ int main()
 {
   pthread_t thread1;
   pthread_t thread2;
+  pthread_t thread3;
 
   pthread_mutex_init(&mutex, NULL);
 
   pthread_create(&thread1, NULL, readers, NULL);
-  pthread_create(&thread2, NULL, writers, NULL);
+  pthread_create(&thread2, NULL, readers, NULL);
+  pthread_create(&thread3, NULL, writers, NULL);
 
   pthread_join(thread1, NULL);
   pthread_join(thread2, NULL);

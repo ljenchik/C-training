@@ -15,7 +15,6 @@
 #include <math.h>
 #include <stdbool.h>
 #include <unistd.h>
-#include <semaphore.h>
 
 struct database
 {
@@ -24,8 +23,8 @@ struct database
   bool new_prime_number_found;
 };
 
-struct database Database = {10, 0, false};
-sem_t semaphore;
+struct database Database = {0, 0, false};
+pthread_mutex_t mutex;
 
 bool is_prime(unsigned long long num)
 {
@@ -43,45 +42,50 @@ bool is_prime(unsigned long long num)
   return true;
 }
 
-void *thread1_function(void *args)
+void *thread1_function()
 {
-  Database.number_counter = *((unsigned long long *)args);
-  for (unsigned long long i = 0; i < Database.number_counter; i++)
+  while (true)
   {
-    if (is_prime(i) == true)
+    // pthread_mutex_lock(&mutex);
+    while (Database.new_prime_number_found)
     {
-      if (Database.new_prime_number_found == false)
-      {
-        Database.last_prime_number = i;
-        Database.new_prime_number_found = true;
-        printf("Thread 1: last prime number is %llu \n", i);
-        sem_post(&semaphore);
-      }
-      else
-      {
-        sem_wait(&semaphore);
-        sleep(2);
-      }
+      // pthread_mutex_lock(&mutex);
+      sleep(5);
+      // pthread_mutex_unlock(&mutex);
     }
+
+    if (is_prime(Database.number_counter) == true)
+    {
+      pthread_mutex_lock(&mutex);
+      if (Database.new_prime_number_found == true)
+      {
+        Database.last_prime_number = Database.number_counter;
+        pthread_mutex_unlock(&mutex);
+      };
+    }
+    Database.number_counter++;
+    // pthread_mutex_unlock(&mutex);
   }
   return NULL;
 }
 
-void *thread2_function(void *args)
+void *thread2_function()
 {
-  Database.number_counter = *((unsigned long long *)args);
-  for (unsigned long long i = 0; i < Database.number_counter; i++)
+  while (true)
   {
-    if (is_prime(i) == true)
+    pthread_mutex_lock(&mutex);
+    if (Database.new_prime_number_found == true)
     {
-      printf("Thread 2: last prime number is %llu \n", i);
+      printf("Prime Number Found: %llu\n", Database.last_prime_number);
       Database.new_prime_number_found = false;
     }
     else
     {
-      printf("Thread 2: current number is %llu \n", i);
+      printf("Current Value: %llu\n", Database.number_counter);
     }
+    pthread_mutex_unlock(&mutex);
   }
+
   return NULL;
 }
 
@@ -89,16 +93,36 @@ int main()
 {
   pthread_t thread1;
   pthread_t thread2;
+  pthread_mutex_init(&mutex, NULL);
 
-  // Initializing semaphore, 0 for threads and 1 for processes, 1 is initial value of the semaphore
-  sem_init(&semaphore, 0, 1);
-
-  pthread_create(&thread1, NULL, thread1_function, (void *)&Database.number_counter);
-  pthread_create(&thread2, NULL, thread2_function, (void *)&Database.number_counter);
+  pthread_create(&thread1, NULL, thread1_function, NULL);
+  pthread_create(&thread2, NULL, thread2_function, NULL);
 
   pthread_join(thread1, NULL);
   pthread_join(thread2, NULL);
 
-  sem_destroy(&semaphore);
   return 0;
 }
+
+// Thread1:
+
+// 1. enter lock
+// 2. set number_counter to i
+// 3. exit lock
+// 4. check if i is prime
+// 5. repeat from 1 if i is not prime
+// 6. enter lock
+// 7. check flag new_prime_number_found. if true, exit lock, sleep repeat from 6.
+// 8. if new_prime_number_found is false, set last_prime_number to i
+// 9. exit lock
+// 10. repeat from 1
+
+// Thread 2:
+// Loop forever
+// 1. enter lock
+// 2. check if number_counter is different from variable on stack, print is different
+// 3. save number_counter on stack
+// 4. check if new_prime_number_found is true, print last_prime_number if it's true
+// 5. set new_prime_number_found to false
+// 6. exit lock
+// 7. repeat from 1.
