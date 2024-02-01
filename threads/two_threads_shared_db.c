@@ -44,44 +44,66 @@ bool is_prime(unsigned long long num)
 
 void *thread1_function()
 {
+  printf("Thread 1: starting thread 1\n");
+  sleep(2);
   while (true)
   {
-    // pthread_mutex_lock(&mutex);
+    // printf("Thread 1: starting thread 1 inside first loop \n");
+    sleep(2);
+    pthread_mutex_lock(&mutex);
+    // printf("Thread 1: number_counter %llu \n", Database.number_counter);
+    sleep(2);
+
     while (Database.new_prime_number_found)
     {
-      // pthread_mutex_lock(&mutex);
-      sleep(5);
-      // pthread_mutex_unlock(&mutex);
+      pthread_mutex_lock(&mutex);
+      sleep(2);
+      pthread_mutex_unlock(&mutex);
     }
 
     if (is_prime(Database.number_counter) == true)
     {
-      pthread_mutex_lock(&mutex);
+      // printf("Thread 1: number_counter inside first if %llu \n", Database.number_counter);
       if (Database.new_prime_number_found == true)
       {
+        sleep(2);
+        Database.new_prime_number_found = false;
+      }
+      else
+      {
+        // pthread_mutex_lock(&mutex);
         Database.last_prime_number = Database.number_counter;
-        pthread_mutex_unlock(&mutex);
-      };
+        Database.new_prime_number_found = true;
+        // pthread_mutex_unlock(&mutex);
+      }
     }
     Database.number_counter++;
-    // pthread_mutex_unlock(&mutex);
+    pthread_mutex_unlock(&mutex);
   }
+
   return NULL;
 }
 
 void *thread2_function()
 {
+  printf("Thread 2: starting thread 2 \n");
+  sleep(2);
   while (true)
   {
+    // printf("Thread 2: starting thread 2 inside first loop\n");
+    sleep(2);
     pthread_mutex_lock(&mutex);
+    // printf("Thread 2: number_counter %llu \n", Database.number_counter);
+    sleep(2);
     if (Database.new_prime_number_found == true)
     {
-      printf("Prime Number Found: %llu\n", Database.last_prime_number);
+      printf("Thread 2: prime number found: %llu\n", Database.last_prime_number);
       Database.new_prime_number_found = false;
     }
     else
     {
-      printf("Current Value: %llu\n", Database.number_counter);
+      printf("Thread 2: current number_counter: %llu\n", Database.number_counter);
+      sleep(2);
     }
     pthread_mutex_unlock(&mutex);
   }
@@ -103,26 +125,3 @@ int main()
 
   return 0;
 }
-
-// Thread1:
-
-// 1. enter lock
-// 2. set number_counter to i
-// 3. exit lock
-// 4. check if i is prime
-// 5. repeat from 1 if i is not prime
-// 6. enter lock
-// 7. check flag new_prime_number_found. if true, exit lock, sleep repeat from 6.
-// 8. if new_prime_number_found is false, set last_prime_number to i
-// 9. exit lock
-// 10. repeat from 1
-
-// Thread 2:
-// Loop forever
-// 1. enter lock
-// 2. check if number_counter is different from variable on stack, print is different
-// 3. save number_counter on stack
-// 4. check if new_prime_number_found is true, print last_prime_number if it's true
-// 5. set new_prime_number_found to false
-// 6. exit lock
-// 7. repeat from 1.
