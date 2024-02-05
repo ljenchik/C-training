@@ -71,7 +71,7 @@ int main()
     strftime(buffer, BUFFER_SIZE, "%c", timeinfo);
     printf("Current date and time: %s \n", buffer);
 
-    sendto(server_sd, buffer, strlen(buffer), 0, (struct sockaddr *)&client_address.sin_addr, client_addr_len);
+    sendto(server_sd, buffer, strlen(buffer), 0, (struct sockaddr *)&client_address, client_addr_len);
 
     sleep(5);
   }
