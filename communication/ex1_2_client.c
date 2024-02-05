@@ -29,7 +29,7 @@ int main()
   server_address.sin_addr.s_addr = inet_addr(SERVER_IP);
   server_address.sin_port = htons(PORT);
 
-  const char *message = "register";
+  const char *message = "registered";
   sendto(client_socket, message, strlen(message), 0, (struct sockaddr *)&server_address, sizeof(server_address));
 
   while (1)
@@ -44,8 +44,8 @@ int main()
 
     printf("Received from server: %s \n", buffer);
 
-    memset(buffer, 0, BUFFER_SIZE);
-    sendto(client_socket, buffer, strlen(buffer), 0, (struct sockaddr *)&server_address, sizeof(server_address));
+    // memset(buffer, 0, BUFFER_SIZE);
+    // sendto(client_socket, buffer, strlen(buffer), 0, (struct sockaddr *)&server_address, sizeof(server_address));
 
     sleep(5);
   }

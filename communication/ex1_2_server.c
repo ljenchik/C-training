@@ -13,7 +13,8 @@
 
 #define PORT 12345
 #define BUFFER_SIZE 1024
-#define SERVER_IP "192.168.1.204"
+// #define SERVER_IP "192.168.1.204"
+#define SERVER_IP "127.0.0.1"
 
 int main()
 {
@@ -57,19 +58,18 @@ int main()
   {
     perror("Receive failed");
   }
-  printf("Received from client: %s \n", buffer);
+  printf("Client registration: %s \n", buffer);
 
   while (1)
   {
-
-    sendto(server_sd, buffer, received_bytes, 0, (struct sockaddr *)&client_address, client_addr_len);
-
-    recvfrom(server_sd, buffer, sizeof(buffer), 0, (struct sockaddr *)&client_address, &client_addr_len);
+    // sendto(server_sd, buffer, strlen(buffer), 0, (struct sockaddr *)&client_address, client_addr_len);
+    // recvfrom(server_sd, buffer, sizeof(buffer), 0, (struct sockaddr *)&client_address, &client_addr_len);
 
     time(&rawtime);
     timeinfo = localtime(&rawtime);
+    memset(buffer, 0, BUFFER_SIZE);
     strftime(buffer, BUFFER_SIZE, "%c", timeinfo);
-    printf("Buffer contains: %s \n", buffer);
+    printf("Current date and time: %s \n", buffer);
 
     sendto(server_sd, buffer, strlen(buffer), 0, (struct sockaddr *)&client_address.sin_addr, client_addr_len);
 
