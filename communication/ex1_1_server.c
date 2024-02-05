@@ -52,7 +52,7 @@ int main()
   // Translate an unsigned short integer into network byte order
   server_addr.sin_port = htons(1212);
 
-  inet_pton(AF_INET, "192.168.1.204", &server_addr.sin_addr);
+  inet_pton(AF_INET, "127.0.0.1", &server_addr.sin_addr);
   // Assigns a server socket address to a socket identified by descriptor socket that has no local socket address assigned
   bind(ser_sd, (struct sockaddr *)&server_addr, ser_addr_len);
 

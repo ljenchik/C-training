@@ -25,7 +25,7 @@ int main()
   memset(&server_addr, 0, ser_addr_len);
   server_addr.sin_family = AF_INET;
   server_addr.sin_port = htons(1212);
-  inet_pton(AF_INET, "192.168.1.204", &server_addr.sin_addr);
+  inet_pton(AF_INET, "127.0.0.1", &server_addr.sin_addr);
 
   connect(ser_sd, (struct sockaddr *)&server_addr, ser_addr_len);
 
