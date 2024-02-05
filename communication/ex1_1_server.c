@@ -30,6 +30,10 @@ int main()
 {
   int ser_sd, cl_sd;
   struct sockaddr_in server_addr, client_addr;
+
+  socklen_t cl_addr_len = sizeof(client_addr);
+  socklen_t ser_addr_len = sizeof(server_addr);
+
   char buffer[1024];
   time_t rawtime;
   struct tm *timeinfo;
@@ -38,23 +42,30 @@ int main()
   // SOCK_STREAM for TCP connection
   // AF_INET for IPv4, TCP and UDP protocols
   ser_sd = socket(AF_INET, SOCK_STREAM, 0);
-  // Deslaring a socket
-  // Creating a memory for it with 0 content
-  memset(&server_addr, 0, sizeof(server_addr));
+
+  // Fills a block of memory with a 0
+  memset(&server_addr, 0, ser_addr_len);
+
   // Initialising a socket
   server_addr.sin_family = AF_INET;
+
   // Translate an unsigned short integer into network byte order
   server_addr.sin_port = htons(1212);
+
   inet_pton(AF_INET, "192.168.1.204", &server_addr.sin_addr);
-  // The bind() function assigns a server socket address to a socket identified by descriptor socket that has no local socket address assigned.
-  bind(ser_sd, (struct sockaddr *)&server_addr, sizeof(server_addr));
+  // Assigns a server socket address to a socket identified by descriptor socket that has no local socket address assigned
+  bind(ser_sd, (struct sockaddr *)&server_addr, ser_addr_len);
+
+  // Prepare the server for incoming client requests
+  // 10 is the maximum length for the queue of pending connections
   listen(ser_sd, 10);
-  printf("Server listening on port %d...\n", server_addr.sin_port);
+
+  printf("Server listening on port %d...\n", ntohs(server_addr.sin_port));
+
   while (1)
   {
     // Accept the incoming connection
-    int len = sizeof(client_addr);
-    if ((cl_sd = accept(ser_sd, (struct sockaddr *)&client_addr, &len)) < 0)
+    if ((cl_sd = accept(ser_sd, (struct sockaddr *)&client_addr, &cl_addr_len)) < 0)
     {
       perror("Accept failed");
     }
@@ -63,7 +74,7 @@ int main()
     {
       time(&rawtime);
       timeinfo = localtime(&rawtime);
-      printf("Curren time and date: %s", asctime(timeinfo));
+      printf("Current time and date: %s", asctime(timeinfo));
       // Formats the time represented and stored into buffer
       strftime(buffer, 1024, "%c", timeinfo);
       send(cl_sd, buffer, strlen(buffer), 0);

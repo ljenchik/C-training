@@ -16,31 +16,28 @@
 
 int main()
 {
-  char buffer[1024] = {0};
-  // Creating a server socket
-  // SOCK_STREAM for TCP connection
-  // AF_INET for IPv4, TCP and UDP protocols
-  int sd = socket(AF_INET, SOCK_STREAM, 0);
+  int ser_sd = socket(AF_INET, SOCK_STREAM, 0);
   struct sockaddr_in server_addr;
-  // Creating a memory for it with 0 content
-  memset(&server_addr, 0, sizeof(server_addr));
-  // Initialising a socket
+  char buffer[1024];
+
+  socklen_t ser_addr_len = sizeof(server_addr);
+
+  memset(&server_addr, 0, ser_addr_len);
   server_addr.sin_family = AF_INET;
-  // Translate an unsigned short integer into network byte order
   server_addr.sin_port = htons(1212);
   inet_pton(AF_INET, "192.168.1.204", &server_addr.sin_addr);
 
-  connect(sd, (struct sockaddr *)&server_addr, sizeof(server_addr));
+  connect(ser_sd, (struct sockaddr *)&server_addr, ser_addr_len);
+
   while (1)
   {
-    // Receive and print the current time from the server
     memset(buffer, 0, sizeof(buffer));
-    recv(sd, buffer, sizeof(buffer), 0);
+    recv(ser_sd, buffer, sizeof(buffer), 0);
     printf("Received from the server: %s \n", buffer);
     sleep(5);
   }
 
-  close(sd);
+  close(ser_sd);
 
   return 0;
 }
