@@ -70,6 +70,7 @@ int main()
       perror("Accept failed");
     }
     printf("Client connected\n");
+
     while (1)
     {
       time(&rawtime);
