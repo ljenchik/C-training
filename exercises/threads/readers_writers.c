@@ -69,31 +69,28 @@ int append_to_file(const char *filename, const char *data)
 void *readers()
 {
   printf("Thread readers started \n");
+  sem_wait(&semaphore);
   if (is_file_empty("text.txt") != 0)
   {
-    printf("Thread readers can not read empty file \n");
-    sem_wait(&semaphore);
-    printf("Thread readers can read now \n");
-    printf("File contains: ===============================\n");
-    read_from_file("text.txt");
-    printf("End of file: =================================\n");
-    sem_post(&semaphore);
+    printf("File is empty, readers cannot read\n");
   }
   else
   {
-    sem_wait(&semaphore);
     printf("Thread readers is reading from a file \n");
+    pthread_mutex_lock(&mutex);
     printf("File contains: ===============================\n");
     read_from_file("text.txt");
     printf("End of file: =================================\n");
-    sem_post(&semaphore);
+    pthread_mutex_unlock(&mutex);
   }
+  sem_post(&semaphore);
   return NULL;
 }
 
 void *writers(void *args)
 {
   char *text_to_add = (char *)args;
+  sem_wait(&semaphore);
   printf("Thread writers started \n");
   pthread_mutex_lock(&mutex);
   append_to_file("text.txt", text_to_add);
@@ -103,7 +100,7 @@ void *writers(void *args)
   return NULL;
 }
 
-int main()
+int main(void)
 {
   pthread_t thread1;
   pthread_t thread2;
