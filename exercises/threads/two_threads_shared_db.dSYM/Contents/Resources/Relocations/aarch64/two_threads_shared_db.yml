@@ -1,0 +1,12 @@
+---
+triple:          'arm64-apple-darwin'
+binary-path:     '/Users/opo839/Documents/C-training/threads/two_threads_shared_db'
+relocations:
+  - { offsetInCU: 0x26, offset: 0x26, size: 0x8, addend: 0x0, symName: _is_prime, symObjAddr: 0x0, symBinAddr: 0x100003C3C, symSize: 0xD0 }
+  - { offsetInCU: 0x3F, offset: 0x3F, size: 0x8, addend: 0x0, symName: _Database, symObjAddr: 0x2E0, symBinAddr: 0x100008000, symSize: 0x0 }
+  - { offsetInCU: 0x9D, offset: 0x9D, size: 0x8, addend: 0x0, symName: _mutex, symBinAddr: 0x100008018, symSize: 0x0 }
+  - { offsetInCU: 0xF1, offset: 0xF1, size: 0x8, addend: 0x0, symName: _is_prime, symObjAddr: 0x0, symBinAddr: 0x100003C3C, symSize: 0xD0 }
+  - { offsetInCU: 0x135, offset: 0x135, size: 0x8, addend: 0x0, symName: _thread1_function, symObjAddr: 0xD0, symBinAddr: 0x100003D0C, symSize: 0xE4 }
+  - { offsetInCU: 0x15D, offset: 0x15D, size: 0x8, addend: 0x0, symName: _thread2_function, symObjAddr: 0x1B4, symBinAddr: 0x100003DF0, symSize: 0xA8 }
+  - { offsetInCU: 0x185, offset: 0x185, size: 0x8, addend: 0x0, symName: _main, symObjAddr: 0x25C, symBinAddr: 0x100003E98, symSize: 0x84 }
+...
