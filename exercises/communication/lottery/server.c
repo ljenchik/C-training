@@ -31,9 +31,10 @@ struct cl_numbers client_numbers[10];
 
 int main()
 {
-  int server_socket, client_sockets[10], max_sd;
+  int server_socket, client_sockets[10], max_sd, fd[2];
   struct sockaddr_in server_address, client_address;
   fd_set read_fds; // adds the file descriptor fd to set
+  pipe(fd);
 
   socklen_t client_addr_len = sizeof(client_address);
   socklen_t server_addr_len = sizeof(server_address);
@@ -119,6 +120,7 @@ int main()
       if (pid == 0)
       {
         close(server_socket);
+        close(fd[0]);
         if (FD_ISSET(sd, &read_fds))
         {
           memset(buffer, 0, sizeof(buffer));
@@ -127,17 +129,21 @@ int main()
           client_numbers[i].sd = sd;
           client_numbers[i].num = atoi(buffer);
           printf("Clients numbers: %d, %d \n", client_numbers[i].sd, client_numbers[i].num);
+          write(fd[1], client_numbers, sizeof(client_numbers));
         }
         close(sd);
         exit(0);
       }
     }
     wait(NULL);
-    // printf("Client_numbers\n");
-    //  for (int j = 0; j < 10; j++)
-    //  {
-    //    printf("%d, %d \n", client_numbers[j].sd, client_numbers[j].num);
-    //  }
+    close(fd[1]);
+    int nbytes = read(fd[0], client_numbers, sizeof(client_numbers));
+    printf("Received from client %d \n", nbytes);
+    printf("Client_numbers\n");
+    for (int j = 0; j < 10; j++)
+    {
+      printf("%d, %d \n", client_numbers[j].sd, client_numbers[j].num);
+    }
   }
   return 0;
 }

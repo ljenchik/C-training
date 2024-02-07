@@ -1,0 +1,9 @@
+---
+triple:          'arm64-apple-darwin'
+binary-path:     '/Users/opo839/Documents/C-training/exercises/communication/lottery/server'
+relocations:
+  - { offsetInCU: 0x26, offset: 0x26, size: 0x8, addend: 0x0, symName: _main, symObjAddr: 0x0, symBinAddr: 0x10000364C, symSize: 0x75C }
+  - { offsetInCU: 0x4D, offset: 0x4D, size: 0x8, addend: 0x0, symName: _client_numbers, symBinAddr: 0x100008000, symSize: 0x0 }
+  - { offsetInCU: 0x17D, offset: 0x17D, size: 0x8, addend: 0x0, symName: _main, symObjAddr: 0x0, symBinAddr: 0x10000364C, symSize: 0x75C }
+  - { offsetInCU: 0x483, offset: 0x483, size: 0x8, addend: 0x0, symName: __OSSwapInt16, symObjAddr: 0x75C, symBinAddr: 0x100003DA8, symSize: 0x24 }
+...

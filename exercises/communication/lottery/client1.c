@@ -47,7 +47,7 @@ int main()
   sprintf(str, "%d", rand_number);
   send(client_socket_1, str, 20, 0);
 
-  sleep(60);
+  sleep(20);
 
   // // Receive data from the server
   // memset(buffer, 0, sizeof(buffer));

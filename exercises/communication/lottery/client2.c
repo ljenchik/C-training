@@ -47,7 +47,7 @@ int main()
     char str[20];
     sprintf(str, "%d", rand_number);
     int bytes_sent = send(client_socket_2, str, 20, 0);
-    sleep(60);
+    sleep(20);
     // // Receive data from the server
     // memset(buffer, 0, sizeof(buffer));
     // int received_bytes = recv(client_socket_1, buffer, sizeof(buffer), 0);
@@ -57,7 +57,7 @@ int main()
     //   break;
     // }
     // printf("Received from server: %s\n", buffer);
-    }
+  }
 
   // Close the socket
   close(client_socket_2);
