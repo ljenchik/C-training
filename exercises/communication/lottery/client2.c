@@ -36,28 +36,27 @@ int main()
     exit(EXIT_FAILURE);
   }
 
-  while (1)
-  {
-    // Send a random number to the server
-    srand(time(0));
-    const int rand_number = rand() % 90 + 1;
-    printf("%d \n", rand_number);
+  // while (1)
+  // {
+  //   // Send a random number to the server
+  srand(time(0));
+  const int rand_number = rand() % 90 + 1;
+  printf("%d \n", rand_number);
+  // Converting a random number to a string
+  char str[20];
+  sprintf(str, "%d", rand_number);
+  send(client_socket_2, str, 20, 0);
 
-    // Converting a random number to a string
-    char str[20];
-    sprintf(str, "%d", rand_number);
-    int bytes_sent = send(client_socket_2, str, 20, 0);
-    sleep(20);
-    // // Receive data from the server
-    // memset(buffer, 0, sizeof(buffer));
-    // int received_bytes = recv(client_socket_1, buffer, sizeof(buffer), 0);
-    // if (received_bytes == 0)
-    // {
-    //   printf("Server disconnected\n");
-    //   break;
-    // }
-    // printf("Received from server: %s\n", buffer);
-  }
+  // // Receive data from the server
+  // memset(buffer, 0, sizeof(buffer));
+  // int received_bytes = recv(client_socket_1, buffer, sizeof(buffer), 0);
+  // if (received_bytes == 0)
+  // {
+  //   printf("Server disconnected\n");
+  //   break;
+  // }
+  // printf("Received from server: %s\n", buffer);
+  // }
 
   // Close the socket
   close(client_socket_2);
