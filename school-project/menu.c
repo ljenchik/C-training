@@ -34,10 +34,12 @@ void display_menu(void) {
   printf("5) Find students studying a subject\n");
   printf("6) Find teacher teaching a subject\n");
   printf("7) Find grades for a student in a subject\n");
-  printf("8) Find teachers teaching a student\n");
-  printf("9) Find students taught by a teacher\n");
-  printf("10) Print all subjects\n");
-  printf("11) Print all students\n");
+  printf("8) Print student with subjects and grades\n");
+  printf("9) Find teachers teaching a student\n");
+  printf("10) Find students taught by a teacher\n");
+  printf("11) Print all subjects\n");
+  printf("12) Print all students\n");
+  printf("13) Save data to files\n");
   printf("0) Exit\n");
   printf("========================================\n");
   printf("Enter your choice: ");
@@ -273,23 +275,37 @@ void menu_find_grades(StudentList *student_head) {
     return;
   }
   
-  printf("\nOptions:\n");
-  printf("1) View all grades for this student\n");
-  printf("2) View grade for specific subject\n");
-  
-  int choice = get_int_input("Enter choice: ");
-  
-  if (choice == 1) {
-    print_subjects_with_grades(&found_student->student);
-  } else if (choice == 2) {
-    int subject_id = get_int_input("Enter subject ID: ");
-    print_grade_per_subject(&found_student->student, subject_id);
-  } else {
-    printf("Invalid choice\n");
-  }
+  int subject_id = get_int_input("Enter subject ID: ");
+  print_grade_per_subject(&found_student->student, subject_id);
+ 
 }
 
-// Menu option 8: Find teachers teaching a student
+// Menu option 8: Print student with subjects and grades
+void menu_find_subjects_with_grades(StudentList *student_head) {
+  if (student_head == NULL) {
+    printf("Error: No students in the system\n");
+    return;
+  }
+  
+  printf("\n--- Find Student Grades ---\n");
+  
+  printf("\nAvailable students:\n");
+  print_students(student_head);
+  
+  int student_id = get_int_input("Enter student ID: ");
+  
+  StudentList *found_student = get_student_by_id(student_head, student_id);
+  
+  if (found_student == NULL) {
+    printf("Error: Student with ID %d not found\n", student_id);
+    return;
+  }
+  
+  print_student_with_subjects_grades(&found_student->student);
+ 
+}
+
+// Menu option 9: Find teachers teaching a student
 void menu_find_teachers_by_student(StudentList *student_head) {
   if (student_head == NULL) {
     printf("Error: No students in the system\n");
@@ -307,7 +323,7 @@ void menu_find_teachers_by_student(StudentList *student_head) {
   print_teachers_by_student(student_head, student_id);
 }
 
-// Menu option 9: Find students taught by a teacher
+// Menu option 10: Find students taught by a teacher
 void menu_find_students_by_teacher(StudentList *student_head) {
   if (student_head == NULL) {
     printf("Error: No students in the system\n");
@@ -362,12 +378,15 @@ void run_menu(StudentList **student_head, SubjectList **subject_head) {
         menu_find_grades(*student_head);
         break;
       case 8:
-        menu_find_teachers_by_student(*student_head);
+        menu_find_subjects_with_grades(*student_head);
         break;
       case 9:
-        menu_find_students_by_teacher(*student_head);
+        menu_find_teachers_by_student(*student_head);
         break;
       case 10:
+        menu_find_students_by_teacher(*student_head);
+        break;
+      case 11:
         printf("\n--- All Subjects ---\n");
         if (*subject_head) {
           print_subjects(*subject_head);
@@ -375,13 +394,16 @@ void run_menu(StudentList **student_head, SubjectList **subject_head) {
           printf("No subjects in the system\n");
         }
         break;
-      case 11:
+      case 12:
         printf("\n--- All Students ---\n");
         if (*student_head) {
           print_students(*student_head);
         } else {
           printf("No students in the system\n");
         }
+        break;
+      case 13:  // ADDED: Save option
+        save_all_data(*student_head, *subject_head);
         break;
       case 0:
         printf("\nExiting program. Goodbye!\n");

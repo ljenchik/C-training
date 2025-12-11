@@ -5,15 +5,17 @@
 
 // One teacher per one subject, we are not adding subjects to the list if their name is on the list already
 
-// Static variable definition
+// Static variable for subject id
 int subject_id = 0;
 
 // Creating a new subject (it's a node in a SubjectList)
 SubjectList *create_subject(char *subject_name, char *teacher) {
+  
   SubjectList *new_subject = malloc(sizeof(SubjectList));
+  
   if (!new_subject) return NULL;
 
-  // Creating subject_id using a static variable
+  // Creating subject_id
   new_subject->subject.subject_id = ++subject_id;
 
   new_subject->subject.subject_name = malloc(strlen(subject_name) + 1);
@@ -40,7 +42,6 @@ SubjectList *create_subject(char *subject_name, char *teacher) {
 
 // Printing a given subject with all info
 void print_subject(SubjectList *subject) {
-  // Make copies to avoid corrupting original strings
   char name_copy[256];
   char teacher_copy[256];
   
@@ -79,6 +80,10 @@ void print_subjects(SubjectList *head) {
 
 // Getting a specified subject found by id
 SubjectList *get_subject_by_id(SubjectList *head, int subject_id) {
+  if (head == NULL || subject_id <= 0) {
+        return NULL;
+    }
+
   SubjectList *current = head;
   while (current != NULL) {
     if (current->subject.subject_id == subject_id) {
@@ -91,6 +96,10 @@ SubjectList *get_subject_by_id(SubjectList *head, int subject_id) {
 
 // Getting a specified subject found by name
 Subject *get_subject_by_name(SubjectList *head, char *subject_name) {
+   if (head == NULL || subject_name == NULL || subject_name[0] == '\0') {
+    return NULL; 
+  }
+
   SubjectList *current = head;
   while (current != NULL) {
     if (strcasecmp(current->subject.subject_name, subject_name) == 0) {
@@ -103,9 +112,13 @@ Subject *get_subject_by_name(SubjectList *head, char *subject_name) {
 
 // Getting a specified subject found by teacher
 Subject *get_subject_by_teacher(SubjectList *head, char *teacher) {
+  if (head == NULL || teacher == NULL || teacher[0] == '\0') {
+    return NULL;
+  }
+  
   SubjectList *current = head;
   while (current != NULL) {
-    if (strcmp(current->subject.teacher, teacher) == 0) {
+    if (strcasecmp(current->subject.teacher, teacher) == 0) {
       return &(current->subject);
     }
     current = current->next;
@@ -115,8 +128,7 @@ Subject *get_subject_by_teacher(SubjectList *head, char *teacher) {
 
 // Inserting a new subject at the back of a list
 void add_subject(SubjectList *head, SubjectList *new_subject) {
-  if (head == NULL) {
-    printf("Error: invalid head pointer\n");
+  if (head == NULL || !new_subject) {
     return;
   }
   
@@ -126,14 +138,9 @@ void add_subject(SubjectList *head, SubjectList *new_subject) {
   Subject *found_subject_by_name = get_subject_by_name(head, new_subject->subject.subject_name);
   
   if (found_subject_by_name != NULL) {
-    // Make a copy to avoid strtok corruption
-    char name_copy[256];
-    strncpy(name_copy, new_subject->subject.subject_name, 255);
-    name_copy[255] = '\0';
-    char *newline = strchr(name_copy, '\n');
-    if (newline) *newline = '\0';
-    
-    printf("%s is already in the list of subjects\n", name_copy);
+    free(new_subject->subject.subject_name);
+    free(new_subject->subject.teacher);
+    free(new_subject);
     return;
   }
   

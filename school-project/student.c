@@ -7,7 +7,9 @@ int student_id = 0;
 
 // Creating a student
 StudentList *create_student(char *student_name) {
+
   StudentList *new_student = malloc(sizeof(StudentList));
+
   if (!new_student) return NULL; 
   
   new_student->student.student_id = ++student_id;
@@ -17,8 +19,9 @@ StudentList *create_student(char *student_name) {
     free(new_student);
     return NULL;
   }
-  strcpy(new_student->student.student_name, student_name);
 
+  strcpy(new_student->student.student_name, student_name);
+  
   new_student->student.student_subjects = NULL;
   new_student->next = NULL;
 
@@ -27,12 +30,10 @@ StudentList *create_student(char *student_name) {
 
 // Printing a given student with all info
 void print_student(Student *student) {
-  // Make a copy to avoid strtok corruption
   char name_copy[256];
   strncpy(name_copy, student->student_name, 255);
   name_copy[255] = '\0';
   
-  // Remove newline from copy
   char *newline = strchr(name_copy, '\n');
   if (newline) *newline = '\0';
   
@@ -45,6 +46,57 @@ void print_student(Student *student) {
   }
   printf("\n");
 }
+
+// Printing a given student with grades for all subjects
+void print_student_with_subjects_grades(Student *student) {
+  if (student == NULL) {
+    return;
+  }
+  
+  char name_copy[256];
+  strncpy(name_copy, student->student_name, 255);
+  name_copy[255] = '\0';
+  
+  char *newline = strchr(name_copy, '\n');
+  if (newline) *newline = '\0';
+  
+  printf("\t%d\t%s\t\t", student->student_id, name_copy);
+  
+  SubjectList *current = student->student_subjects;
+  if (current == NULL) {
+    printf("(no subjects)");
+  } else {
+    while (current != NULL) {
+      // Show grade if assigned, otherwise show "-"
+      if (current->subject.grade > 0) {
+        printf("%s(%d)  ", current->subject.subject_name, current->subject.grade);
+      } else {
+        printf("%s(-)  ", current->subject.subject_name);
+      }
+      current = current->next;
+    }
+  }
+  printf("\n");
+}
+
+// Printing all students with their subjects
+void print_students(StudentList *head) {
+  if (head == NULL) {
+    printf("Error: invalid pointer\n");
+    return;
+  }
+  
+  StudentList *current = head;
+  printf("Student id\tName\t\tSubjects\n");
+  printf("\n");
+  while (current != NULL) {
+    print_student(&(current->student));
+    current = current->next;
+  }
+  printf("\n");
+}
+
+
 
 // Getting a student by id
 StudentList *get_student_by_id(StudentList *head, int student_id) {
@@ -103,24 +155,6 @@ void add_student(StudentList *head, StudentList *new_student) {
   current->next = new_student;
   new_student->next = NULL;
 }
-
-// Printing all students with their subjects
-void print_students(StudentList *head) {
-  if (head == NULL) {
-    printf("Error: invalid pointer\n");
-    return;
-  }
-  
-  StudentList *current = head;
-  printf("Student id\tName\t\tSubjects\n");
-  printf("\n");
-  while (current != NULL) {
-    print_student(&(current->student));
-    current = current->next;
-  }
-  printf("\n");
-}
-
 
 // Check if student already has this subject
 int student_has_subject(Student *student, int subject_id) {

@@ -1,0 +1,5 @@
+1|Misha|2|90
+2|Olena|1|100
+3|Daniel|1|0
+4|Alex|3|0
+1|Ned|2|90

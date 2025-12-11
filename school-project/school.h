@@ -48,6 +48,7 @@ StudentList *create_student(char *student_name);
 
 void print_student(Student *student);
 void print_students(StudentList *head);
+void print_student_with_subjects_grades(Student *student);
 void add_student(StudentList *head, StudentList *new_student);
 void print_subjects_with_grades(Student *student);
 void print_grade_per_subject(Student *student, int subject_id);
