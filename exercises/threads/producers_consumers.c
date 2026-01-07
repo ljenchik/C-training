@@ -15,37 +15,30 @@
 #include <pthread.h>
 #include <stdbool.h>
 #include <unistd.h>
-#include <semaphore.h>
 #include <stdlib.h>
 #include <time.h>
-#define BUFFER_SIZE 4
 
-sem_t semaphore;
+#define BUFFER_SIZE 5
+#define NUM_PRODUCERS 4
+#define NUM_CONSUMERS 4
+
+
 pthread_mutex_t mutex;
-int last_non_zero_index = -1; // the last non-zero element
+int last_non_zero_index = -1;
 
-// int buffer[BUFFER_SIZE] = {1, 2, 3, 4};
 int buffer[BUFFER_SIZE] = {0};
 
-bool is_buffer_empty(int buffer[BUFFER_SIZE])
+bool is_buffer_empty()
 {
-  if (last_non_zero_index == 0)
-  {
-    return true;
-  }
-  return false;
+  return last_non_zero_index == -1;
 }
 
-bool is_buffer_full(int buffer[BUFFER_SIZE])
+bool is_buffer_full()
 {
-  if (last_non_zero_index == BUFFER_SIZE)
-  {
-    return true;
-  }
-  return false;
+  return last_non_zero_index == BUFFER_SIZE - 1;
 }
 
-void print_buffer(int buffer[BUFFER_SIZE])
+void print_buffer()
 {
   printf("Buffer contains: ");
   for (int i = 0; i < BUFFER_SIZE; i++)
@@ -55,131 +48,118 @@ void print_buffer(int buffer[BUFFER_SIZE])
   printf("\n");
 }
 
-void add_to_buffer(int buffer[BUFFER_SIZE])
-{
-  if (last_non_zero_index < BUFFER_SIZE)
-  {
-    srand(time(NULL));
-    buffer[last_non_zero_index + 1] = rand() % 100 + 1;
-    printf("Buffer is not full, producer adds %d to the buffer at the place with index %d\n", buffer[last_non_zero_index + 1], last_non_zero_index + 1);
-    last_non_zero_index = last_non_zero_index + 1;
-
-    print_buffer(buffer);
-  }
-}
-
-void remove_from_buffer(int buffer[BUFFER_SIZE])
-{
-  if (last_non_zero_index > 0)
-  {
-    printf("Buffer is not empty, consumer collects  %d from the place with index %d \n", buffer[last_non_zero_index], last_non_zero_index);
-    buffer[last_non_zero_index] = 0;
-    print_buffer(buffer);
-    last_non_zero_index = last_non_zero_index - 1;
-  }
-}
-
-// void *producers(void *args)
-// {
-//   printf("Thread producers started \n");
-//   while (1)
-//   {
-//     if (is_buffer_full(buffer) == false)
-//     {
-//       // Buffer is not full
-//       pthread_mutex_lock(&mutex);
-//       add_to_buffer(buffer);
-//       sleep(2);
-//       pthread_mutex_unlock(&mutex);
-//     }
-//     else
-//     {
-//       // Buffer is full
-//       // Producer waits for a space to add a new item
-//       printf("Buffer is full \n");
-//       sem_wait(&semaphore);
-//     }
-//     sem_post(&semaphore);
-//     sleep(2);
-//   }
-//   return NULL;
-// }
-
-// void *consumers()
-// {
-//   printf("Thread consumers started \n");
-//   while (1)
-//   {
-//     // sem_wait(&semaphore);
-//     if (is_buffer_empty(buffer) == true)
-//     {
-//       // Buffer is empty
-//       // Consumer waits for an item to collect
-//       printf("Buffer is empty \n");
-//       sem_wait(&semaphore);
-//     }
-//     else
-//     {
-//       // Buffer is not empty
-//       // Consumer collects the first non-zero item
-//       pthread_mutex_lock(&mutex);
-//       remove_from_buffer(buffer);
-//       sleep(2);
-//       pthread_mutex_unlock(&mutex);
-//     }
-//     sem_post(&semaphore);
-//     sleep(2);
-//   }
-//   return NULL;
-// }
-
-void *producers(void *args)
-{
-  printf("Thread producers started \n");
-  while (1)
-  {
-    pthread_mutex_lock(&mutex);
-    if (!is_buffer_full(buffer))
-    {
-      add_to_buffer(buffer);
+void add_to_buffer(int producer_id) {
+    if (last_non_zero_index < BUFFER_SIZE - 1) {
+        buffer[last_non_zero_index + 1] = rand() % 100 + 1;
+        printf("[PRODUCER %d] adds %d to index %d\n", 
+               producer_id, buffer[last_non_zero_index + 1], last_non_zero_index + 1);
+        last_non_zero_index++;
+        print_buffer();
     }
-    pthread_mutex_unlock(&mutex);
-    sleep(2);
-  }
-  return NULL;
 }
 
-void *consumers()
+void remove_from_buffer(int consumer_id)
 {
-  printf("Thread consumers started \n");
-  while (1)
+  if (last_non_zero_index >= 0)
   {
-    pthread_mutex_lock(&mutex);
-    if (!is_buffer_empty(buffer))
-    {
-      remove_from_buffer(buffer);
-    }
-    pthread_mutex_unlock(&mutex);
-    sleep(2);
+    printf("[CONSUMER %d] removes %d \n", 
+               consumer_id, buffer[0]);
+    buffer[0] = 0;
+     for (int i = 0; i < BUFFER_SIZE - 1; i++) {
+            buffer[i] = buffer[i + 1];
+        }
+        
+      buffer[BUFFER_SIZE - 1] = 0;
+    print_buffer();
+    last_non_zero_index--;
   }
-  return NULL;
+}
+
+void *producer(void *args) {
+    int id = *((int *)args);
+    free(args);
+    
+    printf("[PRODUCER %d] Thread started\n", id);
+    
+    while (1) {
+        pthread_mutex_lock(&mutex);
+        
+        if (!is_buffer_full()) {
+            add_to_buffer(id);
+        } else {
+            printf("[PRODUCER %d] ⏸️  Buffer full, waiting...\n", id);
+        }
+        
+        pthread_mutex_unlock(&mutex);
+        sleep(2);
+    }
+    
+    return NULL;
+}
+
+
+void *consumer(void *args) {
+    int id = *((int *)args);
+    free(args);
+    
+    printf("[CONSUMER %d] Thread started\n", id);
+    
+    while (1) {
+        pthread_mutex_lock(&mutex);
+        
+        if (!is_buffer_empty()) {
+            remove_from_buffer(id);
+        } else {
+            printf("[CONSUMER %d] ⏸️  Buffer empty, waiting...\n", id);
+        }
+        
+        pthread_mutex_unlock(&mutex);
+        sleep(2);
+    }
+    
+    return NULL;
 }
 
 int main(void)
 {
-  pthread_t thread1;
-  pthread_t thread2;
+  pthread_t producers[NUM_PRODUCERS];
+  pthread_t consumers[NUM_CONSUMERS];
 
-  sem_init(&semaphore, 0, 1);
+  srand(time(NULL));
+
+  // Initialize the mutex
   pthread_mutex_init(&mutex, NULL);
 
-  pthread_create(&thread1, NULL, consumers, NULL);
-  pthread_create(&thread2, NULL, producers, NULL);
+  printf("=== Producer-Consumer Problem ===\n");
+  printf("Buffer Size: %d\n", BUFFER_SIZE);
+  printf("Producers: %d | Consumers: %d\n\n", NUM_PRODUCERS, NUM_CONSUMERS);
+    
+    // Create producer threads
+  for (int i = 0; i < NUM_PRODUCERS; i++) {
+        int *id = malloc(sizeof(int));
+        *id = i + 1;
+        pthread_create(&producers[i], NULL, producer, id);
+    }
 
-  pthread_join(thread1, NULL);
-  pthread_join(thread2, NULL);
+ for (int i = 0; i < NUM_CONSUMERS; i++) {
+        int *id = malloc(sizeof(int));
+        *id = i + 1;
+        pthread_create(&consumers[i], NULL, consumer, id);
+    }
 
-  sem_destroy(&semaphore);
+  for (int i = 0; i < NUM_PRODUCERS; i++) {
+        pthread_join(producers[i], NULL);
+    }
+
+  for (int i = 0; i < NUM_CONSUMERS; i++) {
+        pthread_join(consumers[i], NULL);
+    }
+
+    // Clean up the mutex (only after threads finish)
+    pthread_mutex_destroy(&mutex);
+  // Clean up the mutex
+  pthread_mutex_destroy(&mutex);
 
   return 0;
 }
+
