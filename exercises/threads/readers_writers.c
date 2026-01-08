@@ -15,112 +15,185 @@
 #include <stdbool.h>
 #include <unistd.h>
 #include <semaphore.h>
+#include <stdlib.h>
+#include <time.h>
+#include <string.h>
 
-sem_t semaphore;
-pthread_mutex_t mutex;
+#define NUM_READERS 2
+#define NUM_WRITERS 2
+#define FILE_NAME "text.txt"
 
-#include <stdio.h>
+sem_t writer_lock;             // Blocks readers when writer is waiting/writing
+pthread_mutex_t reader_mutex;  // Protects reader_count
 
-int is_file_empty(char *filename)
+int reader_count = 0;
+
+// Function to check if a file is empty
+int is_file_empty(const char *filename)
 {
-  FILE *file = fopen(filename, "r");
-  if (file == NULL)
-  {
-    perror("Error opening file");
-    return -1;
-  }
-  // Move the file pointer to the end of the file
-  fseek(file, 0, SEEK_END);
-  // Get the current position of the file pointer
-  long file_size = ftell(file);
-  fclose(file);
-  if (file_size == 0)
-  {
-    return 1; // File is empty
-  }
-  return 0; // File is not empty
+    FILE *file = fopen(filename, "r");
+    if (file == NULL)
+    {
+        perror("Error opening file");
+        return -1;
+    }
+
+    // Move the file pointer to the end to check its size
+    fseek(file, 0, SEEK_END);
+    long file_size = ftell(file);
+    fclose(file);
+
+    return (file_size == 0) ? 1 : 0; // Return 1 if empty, 0 if not
 }
 
+// Function to read content from a file
 int read_from_file(const char *filename)
 {
-  FILE *fptr = fopen(filename, "r");
-  if (fptr == NULL)
-  {
-    perror("Error opening file");
-    return -1;
-  }
-  char myString[100];
-  while (fgets(myString, sizeof(myString), fptr) != NULL)
-  {
-    printf("%s", myString);
-  }
-  fclose(fptr);
-  return 0;
+    FILE *fptr = fopen(filename, "r");
+    if (fptr == NULL)
+    {
+        perror("Error opening file");
+        return -1;
+    }
+
+    char line[100];
+    int line_count = 0;
+    while (fgets(line, sizeof(line), fptr) != NULL)
+    {
+        printf("%s", line);
+        line_count++;
+    }
+
+    fclose(fptr);
+    return line_count;
 }
 
+// Function to append data to a file
 int append_to_file(const char *filename, const char *data)
 {
-  FILE *fptr = fopen(filename, "a");
-  fprintf(fptr, "%s \n", data);
-  fclose(fptr);
-  return 0;
+    FILE *fptr = fopen(filename, "a");
+    if (fptr == NULL)
+    {
+        perror("Error opening file");
+        return -1;
+    }
+
+    fprintf(fptr, "%s\n", data); // Add new line after data
+    fclose(fptr);
+    return 0;
 }
 
-void *readers()
+// Reader thread function
+void *readers(void *args)
 {
-  printf("Thread readers started \n");
-  sem_wait(&semaphore);
-  if (is_file_empty("text.txt") != 0)
-  {
-    printf("File is empty, readers cannot read\n");
-  }
-  else
-  {
-    printf("Thread readers is reading from a file \n");
-    pthread_mutex_lock(&mutex);
-    printf("File contains: ===============================\n");
-    read_from_file("text.txt");
-    printf("End of file: =================================\n");
-    pthread_mutex_unlock(&mutex);
-  }
-  sem_post(&semaphore);
-  return NULL;
+    int id = *((int *)args);
+    free(args);
+
+    sleep(2);
+
+    while (1) {
+
+    printf("[READER %d] Thread started\n", id);
+
+    pthread_mutex_lock(&reader_mutex); 
+    reader_count++;
+    if (reader_count == 1) {  
+        sem_wait(&writer_lock);         
+    }
+    pthread_mutex_unlock(&reader_mutex);
+
+    if (is_file_empty(FILE_NAME) != 0) {
+        printf("[READER %d] File is empty, nothing to read.\n", id);
+    } else {
+        printf("[READER %d] Reading from file...\n", id);
+        printf("===============================\n");
+        
+        int lines_read = read_from_file(FILE_NAME);
+        
+        printf("===============================\n");
+        
+        if (lines_read > 0) {
+            printf("[READER %d] ✓ Successfully read %d lines from file\n", id, lines_read);
+        } else if (lines_read == 0) {
+            printf("[READER %d] ⚠️  File became empty during read\n", id);
+        } else {
+            printf("[READER %d] ✗ Error reading file\n", id);
+        }
+    }
+
+    pthread_mutex_lock(&reader_mutex);  // Lock before modifying reader_count
+    reader_count--;
+    if (reader_count == 0) {
+        sem_post(&writer_lock);          // Last reader unlocks writers
+    }
+    pthread_mutex_unlock(&reader_mutex);
+    sleep(3);
+}
+    return NULL;
 }
 
-void *writers(void *args)
-{
-  char *text_to_add = (char *)args;
-  sem_wait(&semaphore);
-  printf("Thread writers started \n");
-  pthread_mutex_lock(&mutex);
-  append_to_file("text.txt", text_to_add);
-  printf("Thread writers successfully added to the file \n");
-  pthread_mutex_unlock(&mutex);
-  sem_post(&semaphore);
-  return NULL;
+// Writer thread function
+void *writers(void *args) {
+    int id = *((int *)args);
+    free(args);
+
+    while(1) {
+    printf("[WRITER %d] Thread started\n", id);
+    sem_wait(&writer_lock);  
+        
+    printf("[WRITER %d] ✍️  Writing...\n", id);
+
+    time_t now = time(NULL);
+    
+    char *time_str = ctime(&now);
+    time_str[strlen(time_str) - 1] = '\0'; 
+
+    char text[100];
+    sprintf(text, "Writer %d wrote this at time %s", id, time_str);
+    append_to_file(FILE_NAME, text);  
+    printf("[WRITER %d] ✓ Done writing: %s\n", id, text);
+        
+    sem_post(&writer_lock);
+        
+    sleep(5);
+    }
+    return NULL;
 }
 
 int main(void)
 {
-  pthread_t thread1;
-  pthread_t thread2;
-  pthread_t thread3;
-  pthread_t thread4;
+    pthread_t readers_threads[NUM_READERS];
+    pthread_t writers_threads[NUM_WRITERS];
 
-  sem_init(&semaphore, 0, 0);
-  pthread_mutex_init(&mutex, NULL);
+    sem_init(&writer_lock, 0, 1);
+    pthread_mutex_init(&reader_mutex, NULL);
 
-  pthread_create(&thread1, NULL, readers, NULL);
-  pthread_create(&thread2, NULL, writers, "good day");
-  pthread_create(&thread3, NULL, writers, "now");
-  pthread_create(&thread4, NULL, readers, NULL);
+    for (int i = 0; i < NUM_WRITERS; i++) {
+        int *id = malloc(sizeof(int));
+        *id = i + 1;
+        pthread_create(&writers_threads[i], NULL, writers, id);
+    }
 
-  pthread_join(thread1, NULL);
-  pthread_join(thread2, NULL);
-  pthread_join(thread3, NULL);
-  pthread_join(thread4, NULL);
+    for (int i = 0; i < NUM_READERS; i++) {
+            int *id = malloc(sizeof(int));
+            *id = i + 1;
+            pthread_create(&readers_threads[i], NULL, readers, id);
+        }
 
-  sem_destroy(&semaphore);
+    for (int i = 0; i < NUM_WRITERS; i++) {
+            pthread_join(writers_threads[i], NULL);
+        }
 
-  return 0;
+    for (int i = 0; i < NUM_READERS; i++) {
+            pthread_join(readers_threads[i], NULL);
+        }
+
+    
+
+
+    // Destroy the semaphore and mutex
+    sem_destroy(&writer_lock);
+    pthread_mutex_destroy(&reader_mutex);
+
+    return 0;
 }
